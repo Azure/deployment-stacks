@@ -1,0 +1,71 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            }
+        },
+        "authenticationType": {
+            "type": "string",
+            "defaultValue": "password",
+            "allowedValues": [
+                "sshPublicKey",
+                "password"
+            ],
+            "metadata": {
+                "description": "Type of authentication to use on the Virtual Machine. SSH key is recommended."
+            }
+        },
+        "adminPasswordOrKey": {
+            "type": "secureString",
+            "metadata": {
+                "description": "SSH Key or password for the Virtual Machine. SSH key is recommended."
+            }
+        },
+        "_artifactsLocationSasToken": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "For a standard deployment, leave empty. If you are running from a blob template, then provide the Shared Access Signature token (starting with a ?) that grants authorization to the private template. "
+            }
+        },
+        "_artifactsLocation": {
+            "type": "string",
+            "defaultValue": "https://deploymentstacksbugbash.blob.core.windows.net/bugbash/",
+            "metadata": {
+                "description": "For a standard deployment, keep the default.  The https URL to the base of the deployment files in Microsoft Azure. If a SAS key is needed, please do not include the SAS key in the URL. Instead, add the part after and include the question mark to the _artifactsLocationSasToken variable. ex. https://(STORAGE_ACCOUNT)/(SHARE_NAME)/(SUBDIRECTORY_NAME)/"
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "linked-vm",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2020-10-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[uri(parameters('_artifactsLocation'), concat('bugbash/vm-implicit-disk.json', parameters('_artifactsLocationSasToken')))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "adminUsername": {
+                        "value": "[parameters('adminUsername')]"
+                    },
+                    "authenticationType": {
+                        "value": "[parameters('authenticationType')]"
+                    },
+                    "adminPasswordOrKey": {
+                        "value": "[parameters('adminPasswordOrKey')]"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

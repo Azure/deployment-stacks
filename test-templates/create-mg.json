@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "mgName": {
+        "type": "string",
+        "defaultValue": "[concat('mg-', uniqueString(newGuid()))]"
+      }
+    },
+    "resources": [
+      {
+        "scope": "/",
+        "type": "Microsoft.Management/managementGroups",
+        "apiVersion": "2020-02-01",
+        "name": "[parameters('mgName')]",
+        "properties": {
+        }
+      }
+    ]
+  }
+  
