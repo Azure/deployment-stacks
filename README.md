@@ -1,9 +1,11 @@
 # Get started with the Deployment Stacks (Preview)
+
 Azure customers find it extremely difficult to manage a collection of resources throughout the lifecycle – while it’s easy to deploy resources together as a group, there is no relationship between the set of resources in a deployment and how those resources exist in Azure. Applications deployed to Azure may span multiple resource groups, subscriptions and even tenants. Currently there is no platform solution for viewing and managing the resources that an application is composed of. Stacks will make it easy to manage a resources throughout a lifecycle.
 
 A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group.
 
 ## Known limitations
+
 There are the known limitations with the private preview
 
 - Lock/unlock resources is unavailable. Lock/unlock performs an operation on the set of resources to prevent (Lock) or enable (Unlock) changes.
@@ -11,7 +13,6 @@ There are the known limitations with the private preview
 - The purge mode of a stack does not purge resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
 - Can't create managed group level stacks.
 - It is not recommended to use stack in production environment because this release returns secured strings, secured objects, and the template.
-
 
 ## Install
 
@@ -126,7 +127,7 @@ It takes a few moments to create a stack.  Once completed, you can run the follo
 ```azurepowershell
 Get-AzResourceGroupDeploymentStack `
   -ResourceGroupName myRgStackRg `
-  -StackName myRgStack
+  -Name myRgStack
 ```
 
 The output is similar to:
@@ -338,7 +339,9 @@ Modify the original template to remove an existing resource or add a new resourc
 - **Detach**: remove the resource from the stack, but keep the resource in Azure.
 - **Purge**: remove the resource from the stack, and remove the resource from Azure.
 
-### At the resource group level using Detach
+### At the resource group level
+
+To use the detach option:
 
 ```azurepowershell
 Set-AzResourceGroupDeploymentStack `
@@ -346,10 +349,10 @@ Set-AzResourceGroupDeploymentStack `
     -ResourceGroupName myRgStackRg `
     -TemplateFile stack.json `
     -ParameterFile azuredeploy.parameters.json `
-    -UpdateBehavior Detach #Purge
+    -UpdateBehavior Detach
 ```
 
-### At the resource group level using Purge
+To use the purge option:
 
 ```azurepowershell
 Set-AzResourceGroupDeploymentStack `
@@ -362,18 +365,20 @@ Set-AzResourceGroupDeploymentStack `
 
 After updating the stack, use `Get-AzResourceGroupDeploymentStack` to list the resources in the stack.
 
-### At the subscription level using Detach
+### At the subscription level
+
+To use the detach option:
 
 ```azurepowershell
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
-  -UpdateBehavior Detach #Purge `
+  -UpdateBehavior Detach `
   -Location eastus
 ```
 
-### At the subscription level using Purge
+To use the purge option:
 
 ```azurepowershell
 Set-AzSubscriptionDeploymentStack `
@@ -435,8 +440,8 @@ name               : 2021-08-19-16-43-21-174c4
 
 ```azurepowershell
 Remove-AzResourceGroupDeploymentStackSnapshot `
-  -Name myRgStack `
-  -SnapshotName 2021-08-19-16-43-21-174c4 `
+  -Name 2021-08-19-16-43-21-174c4 `
+  -StackName myRgStack `
   -ResourceGroupName myRgStackRg
 ```
 
@@ -453,8 +458,8 @@ To remove a snapshot from a stack:
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStackSnapshot `
-  -Name myRgStack `
-  -SnapshotName 2021-08-19-16-43-21-174c4
+  -Name 2021-08-19-16-43-21-174c4 `
+  -StackName myRgStack
 ```
 
 ## Delete a stack
@@ -466,7 +471,7 @@ Remove a deployment stack also remove the associated snapshots.
 ```azurepowershell
 Remove-AzResourceGroupDeploymentStack `
   -ResourceGroupName myRgStackRG `
-  -StackName myRgStack
+  -Name myRgStack
 ```
 
 If you also want to delete the managed resources of the stack, use the `-Purge` switch:
@@ -474,7 +479,7 @@ If you also want to delete the managed resources of the stack, use the `-Purge` 
 ```azurepowershell
 Remove-AzResourceGroupDeploymentStack `
   -ResourceGroupName myRgStackRG `
-  -StackName myRgStack `
+  -Name myRgStack `
   -Purge
 ```
 
@@ -484,14 +489,14 @@ If you delete a resource group that contains a stack, it deletes the stack and a
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
-  -StackName mySubStack `
+  -Name mySubStack
 ```
 
 If you also want to delete the managed resources of the stack, use the `-Purge` switch:
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
-  -StackName mySubStack `
+  -Name mySubStack `
   -Purge
 ```
 
@@ -509,13 +514,13 @@ New-AzResourceGroupDeploymentStack `
   -ParameterUri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/quickstarts/microsoft.storage/storage-account-create/azuredeploy.parameters.json
 ```
 
-To use a template spec, use the `-TemplateSpec` switch:
+To use a template spec, use the `-TemplateSpecId` switch:
 
 ```azurepowershell
 New-AzResourceGroupDeploymentStack `
   -Name myRgStack `
   -ResourceGroupName myRgStackRg `
-  -TemplateSpec <template-spec-id> `
+  -TemplateSpecId <template-spec-id> `
 ```
 
 ## Next steps
@@ -541,8 +546,8 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Trademarks
-This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
-trademarks or logos is subject to and must follow 
+This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
+trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
