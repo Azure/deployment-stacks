@@ -341,6 +341,8 @@ Modify the original template to remove an existing resource or add a new resourc
 
 ### At the resource group level
 
+To use the detach option:
+
 ```azurepowershell
 Set-AzResourceGroupDeploymentStack `
     -Name myRgStack `
@@ -350,9 +352,22 @@ Set-AzResourceGroupDeploymentStack `
     -UpdateBehavior Detach
 ```
 
+To use the purge option:
+
+```azurepowershell
+Set-AzResourceGroupDeploymentStack `
+    -Name myRgStack `
+    -ResourceGroupName myRgStackRg `
+    -TemplateFile stack.json `
+    -ParameterFile azuredeploy.parameters.json `
+    -UpdateBehavior Purge
+```
+
 After updating the stack, use `Get-AzResourceGroupDeploymentStack` to list the resources in the stack.
 
 ### At the subscription level
+
+To use the detach option:
 
 ```azurepowershell
 Set-AzSubscriptionDeploymentStack `
@@ -360,6 +375,17 @@ Set-AzSubscriptionDeploymentStack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
   -UpdateBehavior Detach `
+  -Location eastus
+```
+
+To use the purge option:
+
+```azurepowershell
+Set-AzSubscriptionDeploymentStack `
+  -Name stack `
+  -TemplateFile azuredeploy.json `
+  -ParameterFile azuredeploy.parameters.json `
+  -UpdateBehavior Purge `
   -Location eastus
 ```
 
@@ -425,7 +451,7 @@ Use the following cmdlet to list the snapshots of a stack:
 
 ```azurepowershell
 Get-AzSubscriptionDeploymentStackSnapshot `
-  -Name mySubStack
+  -StackName mySubStack
 ```
 
 To remove a snapshot from a stack:
