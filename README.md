@@ -13,6 +13,8 @@ There are the known limitations with the private preview
 - The purge mode of a stack does not purge resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
 - Can't create managed group level stacks.
 - It is not recommended to use stack in production environment because this release returns secured strings, secured objects, and the template.
+- Bicep support not available.
+- Portal support not available.
 
 ## Install
 
