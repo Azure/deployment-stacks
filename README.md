@@ -1,22 +1,25 @@
 # Get started with the Deployment Stacks (Preview)
 
-Azure customers find it extremely difficult to manage a collection of resources throughout the lifecycle – while it’s easy to deploy resources together as a group, there is no relationship between the set of resources in a deployment and how those resources exist in Azure. Applications deployed to Azure may span multiple resource groups, subscriptions and even tenants. Currently there is no platform solution for viewing and managing the resources that an application is composed of. Stacks will make it easy to manage a resources throughout a lifecycle.
+Azure customers find it extremely difficult to manage the lifecycle of _collection_ of resources – while it’s easy to deploy resources together as a group, there is no guranteed relationship between the set of resources that were a deployment and where those resources exist in Azure. Infrastructure deployed in Azure may span multiple resource groups, subscriptions and even tenants. Currently there is no platform solution for viewing and managing the resources that an application is composed of. Stacks will make it easy to manage the lifecycle of a collection resources that work together to build your solutions.
 
-A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group.
+A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to a traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/deployments?tabs=json), a deploymentStack is a reusable resource that can help you manage the resources your deployments create. Any resource deployed using a deploymentStack is _managed_ by that deploymentStack, and subsequent updates to the deploymentStack, combined with a `UpdateBehavior` will allow you to control the lifecycle of the resources managed by the deploymentStack. Upon a deploymentStack update, we replace all previously managed resources with the resources created from the latest update. The UpdateBehavior of the deploymentStack allows you to do the following: 
+
+* `DetachResources`: Keep the previously managed resources in Azure.
+* `PurgeResources`: Delete the previously managed resources so that they no longer exist in Azure.
 
 ## Known limitations
 
 There are the known limitations with the private preview
 
-- Lock/unlock resources is unavailable. Lock/unlock performs an operation on the set of resources to prevent (Lock) or enable (Unlock) changes.
+- Locking the resources managed by the deploymentStack is unavailable. In the future, Locking will allow you to prevent (Lock) or enable (Unlock) changes to a set of managed resources.
 - What-if is unavailable. What-if allows for evaluating changes before deploying.
-- The purge mode of a stack does not purge resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
-- Can't create managed group level stacks.
-- It is not recommended to use stack in production environment because this release returns secured strings, secured objects, and the template.
-- Bicep support not available.
-- Portal support not available.
+- A deploymentStack currently doesn not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
+- DeploymentStacks are currently limited to resource group or subscription scope only.
+- It is not recommended to use deploymentStacks in production environment since a deploymentStack doesn not obey secured strings or objects.
+- DeploymentStacks can currently only be created and viewed through PowerShell.
+- You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview).
 
-## Install
+## Installation
 
 Use the following steps to install the deployment stacks PowerShell cmdlets:
 
@@ -141,7 +144,7 @@ ProvisioningState : succeeded
 UpdateBehavior    : detach
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
 ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
-                    '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
+                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
 DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deployments/myRgStack-2021-08-19-16-43-21-174c4
 SnapshotId        : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-16-43-21-174c4
 ```
@@ -321,11 +324,11 @@ ProvisioningState : succeeded
 UpdateBehavior    : detach
 Location          : eastus2
 CreationTime(UTC) : 8/19/2021 5:57:28 PM
-ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/mySubStackrg1', '/subscrip
-                    tions/<sub-id>/resourceGroups/mySubStackrg1/providers/Microsoft.Sto
-                    rage/storageAccounts/stksubiyrmpdcyfhgl6a', '/subscriptions/a1bfa635-f2bf-42f1-86b5-848c674fc32
-                    1/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfh
-                    gl6b', '/subscriptions/<sub-id>/resourceGroups/mySubStackrg2'…}
+ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/mySubStackrg1', 
+                     '/subscriptions/<sub-id>/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfhgl6a', 
+                     '/subscriptions/a1bfa635-f2bf-42f1-86b5-848c674fc31/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfh
+                    gl6b', 
+                     '/subscriptions/<sub-id>/resourceGroups/mySubStackrg2'…}
 DeploymentId      : /subscriptions/<sub-id>/providers/Microsoft.Resources/deployments/S
                     torageSubStack-2021-08-19-18-22-33-d4216
 SnapshotId        : /subscriptions/<sub-id>/providers/Microsoft.Resources/deploymentStacks/
@@ -397,9 +400,9 @@ After updating the stack, use `Get-AzSubscriptionDeploymentStack` to list the re
 
 ## Use snapshots
 
-Snapshots provide a way to view the history of updates to the stack. The resource type is read-only. New snapshots are created by virtue of updating the parent stack. Snapshots are primarily used for viewing history for diagnostics or troubleshooting. In the future, you can roll back a stack to a previous snapshot if there is an error.
+Snapshots provide a way to view the history of updates to the stack. A snapshot is read-only and are created upon a successful update to a deploymentStack. Snapshots are primarily used for viewing history for diagnostics or troubleshooting. In the future, a snapshot can be applied to roll back a deploymentStack to a previous state if there is an error.
 
-The latest snapshot of a stack can't be deleted.
+Since it contains more information about the state of the deploymentStack, the latest snapshot of a stack can't be deleted.
 
 ### At the resource group level
 
@@ -420,7 +423,7 @@ ProvisioningState : succeeded
 UpdateBehavior    : detach
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
 ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
-                    '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
+                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
 DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deployments/myRgStack-2021-08-19-16-43-21-174c4
 
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-18-42-15-e871d
