@@ -1,23 +1,24 @@
 # Get started with the Deployment Stacks (Preview)
 
-Azure customers find it extremely difficult to manage the lifecycle of _collection_ of resources – while it’s easy to deploy resources together as a group, there is no guranteed relationship between the set of resources that were a deployment and where those resources exist in Azure. Infrastructure deployed in Azure may span multiple resource groups, subscriptions and even tenants. Currently there is no platform solution for viewing and managing the resources that an application is composed of. Stacks will make it easy to manage the lifecycle of a collection resources that work together to build your solutions.
+Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together to manage their lifecycle. Infrastructure deployed in Azure may span multiple resource groups, subscriptions and even tenants. Deployment Stacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
 
-A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to a traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/deployments?tabs=json), a deploymentStack is a reusable resource that can help you manage the resources your deployments create. Any resource deployed using a deploymentStack is _managed_ by that deploymentStack, and subsequent updates to the deploymentStack, combined with a `UpdateBehavior` will allow you to control the lifecycle of the resources managed by the deploymentStack. Upon a deploymentStack update, we replace all previously managed resources with the resources created from the latest update. The UpdateBehavior of the deploymentStack allows you to do the following: 
+A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to a traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/deployments?tabs=json), a deploymentStack is a reusable resource that can help you manage the resources your deployment creates. Any resource deployed using a deploymentStack is _managed_ by that deploymentStack, and subsequent updates to the deploymentStack, combined with a `UpdateBehavior` will allow you to control the lifecycle of the resources managed by the deploymentStack. When a deploymentStack is updated, all previously managed resources are replaced with the resources defined in the template used to update the stack. The UpdateBehavior property of the deploymentStack allows you to do the following: 
 
-* `DetachResources`: Keep the previously managed resources in Azure.
+* `DetachResources`: Keep the previously managed resources in Azure but remove them for the list of the stack's managedResources.
 * `PurgeResources`: Delete the previously managed resources so that they no longer exist in Azure.
 
 ## Known limitations
 
 There are the known limitations with the private preview
 
-- Locking the resources managed by the deploymentStack is unavailable. In the future, Locking will allow you to prevent (Lock) or enable (Unlock) changes to a set of managed resources.
-- What-if is unavailable. What-if allows for evaluating changes before deploying.
-- A deploymentStack currently doesn not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
-- DeploymentStacks are currently limited to resource group or subscription scope only.
 - It is not recommended to use deploymentStacks in production environment since a deploymentStack doesn not obey secured strings or objects.
-- DeploymentStacks can currently only be created and viewed through PowerShell.
-- You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview).
+- Locking the resources managed by the deploymentStack is not available in the private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
+- What-if is not available in the private preview. What-if allows for evaluating changes before deploying.
+- A deploymentStack currently doesn not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
+- DeploymentStacks are currently limited to resource group or subscription scope for the private preview.
+- It is not recommended to use deploymentStacks in production environment since a deploymentStack doesn not obey secured strings or objects.
+- DeploymentStacks can currently only be created and viewed through PowerShell and the REST API.
+- You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to create a json file used to create a deploymentStack.
 
 ## Installation
 
@@ -400,9 +401,9 @@ After updating the stack, use `Get-AzSubscriptionDeploymentStack` to list the re
 
 ## Use snapshots
 
-Snapshots provide a way to view the history of updates to the stack. A snapshot is read-only and are created upon a successful update to a deploymentStack. Snapshots are primarily used for viewing history for diagnostics or troubleshooting. In the future, a snapshot can be applied to roll back a deploymentStack to a previous state if there is an error.
+Snapshots provide a way to view the history of updates to the stack. A snapshot is read-only and is created whenever any template resource is successfully deployed.  Note that not all resources need to be successfully deployed for a snapshot to be created. Snapshots are primarily used for viewing history for diagnostics or troubleshooting. In the future, a snapshot can be applied to roll back a deploymentStack to a previous state if there is an error.
 
-Since it contains more information about the state of the deploymentStack, the latest snapshot of a stack can't be deleted.
+Since it contains more information about the state of the deploymentStack, the latest snapshot of a stack cannot be deleted.
 
 ### At the resource group level
 
