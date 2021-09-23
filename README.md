@@ -143,7 +143,7 @@ The output is similar to:
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack
 Name              : myRgStack
 ProvisioningState : succeeded
-UpdateBehavior    : detach
+UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
 ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
                      '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
@@ -159,7 +159,7 @@ The two resources are listed under `ManagedResources`.
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack
 Name              : myRgStack
 ProvisioningState : failed
-UpdateBehavior    : detach
+UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/12/2021 3:33:43 PM
 Error             : LocationNotAvailableForResourceType - The provided location 'eastus2' is not available for resource type 'Providers.Test/statefulResources'. List of available regions for the resource type is 'westus,westus2,eastus,c
                     entralus,northcentralus,southcentralus,westcentralus,westeurope,northeurope,eastasia,southeastasia,westindia,southindia,centralindia,canadacentral,canadaeast,uksouth,ukwest,francecentral,australiacentral,centraluseua
@@ -323,7 +323,7 @@ Id                : /subscriptions/<sub-id>/providers/Microsoft.Resources/deploy
                     mySubStack
 Name              : mySubStack
 ProvisioningState : succeeded
-UpdateBehavior    : detach
+UpdateBehavior    : detachResources
 Location          : eastus2
 CreationTime(UTC) : 8/19/2021 5:57:28 PM
 ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/mySubStackrg1', 
@@ -340,12 +340,12 @@ The two resource groups and the resources are listed under `ManagedResources`.
 
 Modify the original template to remove an existing resource or add a new resource, and then use `Set-AzResourceGroupDeploymentStack` or `Set-AzSubscriptionDeploymentStack` to update the stack. When you remove a resource from a stack, you have two options with the `UpdateBehavior` switch:
 
-- **Detach**: remove the resource from the stack, but keep the resource in Azure.
-- **Purge**: remove the resource from the stack, and remove the resource from Azure.
+- **DetachResources**: remove the resource from the stack, but keep the resource in Azure.
+- **PurgeResources**: remove the resource from the stack, and remove the resource from Azure.
 
 ### At the resource group level
 
-To use the detach option:
+To use the detachResources option:
 
 ```azurepowershell
 Set-AzResourceGroupDeploymentStack `
@@ -353,7 +353,7 @@ Set-AzResourceGroupDeploymentStack `
     -ResourceGroupName myRgStackRg `
     -TemplateFile stack.json `
     -ParameterFile azuredeploy.parameters.json `
-    -UpdateBehavior Detach
+    -UpdateBehavior DetachResources
 ```
 
 To use the purge option:
@@ -371,7 +371,7 @@ After updating the stack, use `Get-AzResourceGroupDeploymentStack` to list the r
 
 ### At the subscription level
 
-To use the detach option:
+To use the detachResources option:
 
 ```azurepowershell
 Set-AzSubscriptionDeploymentStack `
@@ -419,7 +419,7 @@ The following output shows two snapshots:
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-16-43-21-174c4
 Name              : 2021-08-19-16-43-21-174c4
 ProvisioningState : succeeded
-UpdateBehavior    : detach
+UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
 ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
                      '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
