@@ -19,6 +19,7 @@ There are the known limitations with the private preview
 - A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
+- `-PurgeResources` for `Remove-AzSubscriptionDeploymentStack` is experimental and may not cleanup resources properly
 
 ## Installation
 
@@ -363,7 +364,7 @@ Set-AzResourceGroupDeploymentStack `
     -ResourceGroupName myRgStackRg `
     -TemplateFile stack.json `
     -ParameterFile azuredeploy.parameters.json `
-    -UpdateBehavior Purge
+    -UpdateBehavior PurgeResources
 ```
 
 After updating the stack, use `Get-AzResourceGroupDeploymentStack` to list the resources in the stack.
@@ -377,7 +378,7 @@ Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
-  -UpdateBehavior Detach `
+  -UpdateBehavior DetachResources `
   -Location eastus
 ```
 
@@ -388,7 +389,7 @@ Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
-  -UpdateBehavior Purge `
+  -UpdateBehavior PurgeResources `
   -Location eastus
 ```
 
@@ -427,7 +428,7 @@ DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-18-42-15-e871d
 Name              : 2021-08-19-18-42-15-e871d
 ProvisioningState : succeeded
-UpdateBehavior    : detach
+UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/19/2021 6:42:15 PM
 ManagedResources  : '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka'
 DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deployments/myRgStack-2021-08-19-18-42-15-e871d
@@ -477,13 +478,13 @@ Remove-AzResourceGroupDeploymentStack `
   -Name myRgStack
 ```
 
-If you also want to delete the managed resources of the stack, use the `-Purge` switch:
+If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
 
 ```azurepowershell
 Remove-AzResourceGroupDeploymentStack `
   -ResourceGroupName myRgStackRG `
   -Name myRgStack `
-  -Purge
+  -PurgeResources
 ```
 
 If you delete a resource group that contains a stack, it deletes the stack and also detaches the resources that are contained in other resource groups.
@@ -495,12 +496,12 @@ Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-If you also want to delete the managed resources of the stack, use the `-Purge` switch:
+If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
-  -Purge
+  -PurgeResources
 ```
 
 ## Use remote templates, and template specs
