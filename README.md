@@ -9,14 +9,14 @@ A "deploymentStack" is a grouping concept that allows for lifecycle operations t
 
 ## Known limitations
 
-There are the known limitations with the private preview
+There are the known limitations with the private preview release `2021-05-01-preview`:
 
 - It is not recommended to use deploymentStacks in production environment since it is still in preview stages and can introduce breaking changes in the future.
 - Locking the resources managed by the deploymentStack is not available in the private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
 - What-if is not available in the private preview. What-if allows for evaluating changes before deploying.
-- A deploymentStack currently doesn not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
+- A deploymentStack currently does not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
 - DeploymentStacks are currently limited to resource group or subscription scope for the private preview.
-- A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters.
+- A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
 - `-PurgeResources` for `Remove-AzSubscriptionDeploymentStack` is experimental and may not cleanup resources properly
@@ -356,7 +356,7 @@ Set-AzResourceGroupDeploymentStack `
     -UpdateBehavior DetachResources
 ```
 
-To use the purge option:
+To use the purgeResources option:
 
 ```azurepowershell
 Set-AzResourceGroupDeploymentStack `
@@ -382,7 +382,7 @@ Set-AzSubscriptionDeploymentStack `
   -Location eastus
 ```
 
-To use the purge option:
+To use the purgeResources option:
 
 ```azurepowershell
 Set-AzSubscriptionDeploymentStack `
