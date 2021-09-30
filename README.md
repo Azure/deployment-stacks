@@ -7,6 +7,8 @@ A "deploymentStack" is a grouping concept that allows for lifecycle operations t
 * `DetachResources`: Remove previously managed resources from the list of the stack's managedResources, but keep them in Azure.
 * `PurgeResources`: Remove previously managed resources from the list of the stack's managedResources, and also delete them so that they no longer exist in Azure.
 
+To go through a deployment stacks tutorial, select [tutorial](./TUTORIAL.md).
+
 ## Known limitations
 
 There are the known limitations with the private preview release `2021-05-01-preview`:
@@ -550,6 +552,7 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Trademarks
+
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
 trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
