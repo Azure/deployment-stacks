@@ -21,7 +21,7 @@ There are the known limitations with the private preview release `2021-05-01-pre
 - A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
-- Deleting a deploymentStack detaches all of its managed resources, regardless of its `UpdateBehavior`. A temporary workaround to clean up resources managed by the deploymentStack is to deploy an empty template with `-UpdateBehavior PurgeResources` before deleting the stack:
+- Deleting a deploymentStack detaches all of its managed resources, regardless of its `UpdateBehavior`. A temporary workaround in order to clean up resources managed by the deploymentStack is to deploy an empty template with `-UpdateBehavior PurgeResources` before deleting the stack:
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
