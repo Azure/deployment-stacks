@@ -21,7 +21,7 @@ There are the known limitations with the private preview release `2021-05-01-pre
 - A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
-- Deleting a deploymentStack detaches all of its managed resources, regardless of its `UpdateBehavior`. A temporary workaround in order to clean up resources managed by the deploymentStack is to deploy an empty template with `-UpdateBehavior PurgeResources` before deleting the stack:
+- In the preview, deleting a deploymentStack detaches all of its managed resources.  To delete all the managedResources update the deploymentStack with an empty template and set `-UpdateBehavior PurgeResources`, then delete the deploymentStack:
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -483,7 +483,7 @@ Remove-AzSubscriptionDeploymentStackSnapshot `
 
 ## Delete a stack
 
-Remove a deployment stack also remove the associated snapshots. All managed resources will be detached, regardless of `UpdateBehavior`
+Removing a deploymentStack also removes the all snapshots. All managed resources will be detached. To delete all the managedResources update the deploymentStack with an empty template and set `-UpdateBehavior PurgeResources`, then delete the deploymentStack. 
 
 ### At the resource group level
 
@@ -535,15 +535,24 @@ New-AzResourceGroupDeploymentStack `
 
 - Both deploymentStacks and its snapshots contain some diagnostic information that is not displayed by default. When troubleshooting problems with an update, save the objects to analyze them further:
 ```azurepowershell
-$stack =  Get-Az...DeploymentStack ...
-$snapshot = Get-Az...DeploymentStackSnapshot ... // If $stack.SnapshotId exists
+$stack =  Get-AzSubscriptionDeploymentStack -Name 'myStack'
 ```
-- Check which stage of the deploymentStack update failed using `echo $stack.Error`
-    - Failure during deployment:
-        - If `$stack.DeploymentId` exists, check out more information about the underlying deployment failure by investigating its [deployment operations](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) 
-        - Otherwise, refer to the details found in `$stack.Error`
-    - Failure during purging resources:
-        - Check which resources failed to be purged properly be referring to `$snapshot.FailedResources`, in most cases, these failed resources will simply be detached and can be viewed by accessing `$snapshot.DetachedResources`. Successfully purged resources will be viewed by checking `$snapshot.PurgedResources`.
+There may be more than one level for the error messages, to easily see them all at once:
+```
+$stack.Error | ConvertTo-Json -Depth 50
+
+If a deployment was created and the failure occurred during deployment, you can retrieve details of the deployment using the deployment commands.  For example if your template was deployed to a resource group:
+```
+Get-AzResourceGroupDeployment -Id $stack.DeploymentId
+```
+You can get more information from the [deployment operations](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) as needed.
+
+If the failure occurred as part of the deploymentStack operations, more details about the failure can be found on the snapshot:
+```
+Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $stack.SnapshotId
+```
+
+Information about resources that failed to purge can be found in the failedResources array on the snapshot.
 
 ## Contributing
 
