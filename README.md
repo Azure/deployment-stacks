@@ -40,7 +40,7 @@ There are the known limitations with the private preview release `2021-05-01-pre
 
 Use the following steps to install the deployment stacks PowerShell cmdlets:
 
-1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](/powershell/azure/install-az-ps).
+1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/new-azureps-module-az).
 1. Open PowerShell 7 window as administrator.
 1. Run the following command to set up a bypass for local signing policy.
 
