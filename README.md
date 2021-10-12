@@ -21,7 +21,20 @@ There are the known limitations with the private preview release `2021-05-01-pre
 - A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
-- `-PurgeResources` for `Remove-AzSubscriptionDeploymentStack` is experimental and may not cleanup resources properly
+- Deleting a deploymentStack detaches all of its managed resources, regardless of its `UpdateBehavior`. A temporary workaround to clean up resources managed by the deploymentStack is to deploy an empty template with `-UpdateBehavior PurgeResources` before deleting the stack:
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [],
+  "outputs": {
+    "empty": {
+      "type": "bool",
+      "value": true
+    }
+  }
+}
+```
 
 ## Installation
 
@@ -70,7 +83,6 @@ You can use any ARM template to create a deployment stack. The following templat
       "type": "string",
       "defaultValue": "[resourceGroup().location]"
     }
-
   },
   "variables": {
     "storageName1": "[concat(parameters('namePrefix'), uniqueString(resourceGroup().id), 'a')]",
@@ -423,8 +435,9 @@ Name              : 2021-08-19-16-43-21-174c4
 ProvisioningState : succeeded
 UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
-ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
-                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
+ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb',
+                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkc'}
+DetachedResources : '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka'
 DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deployments/myRgStack-2021-08-19-16-43-21-174c4
 
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-18-42-15-e871d
@@ -470,7 +483,7 @@ Remove-AzSubscriptionDeploymentStackSnapshot `
 
 ## Delete a stack
 
-Remove a deployment stack also remove the associated snapshots.
+Remove a deployment stack also remove the associated snapshots. All managed resources will be detached, regardless of `UpdateBehavior`
 
 ### At the resource group level
 
@@ -480,30 +493,11 @@ Remove-AzResourceGroupDeploymentStack `
   -Name myRgStack
 ```
 
-If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
-
-```azurepowershell
-Remove-AzResourceGroupDeploymentStack `
-  -ResourceGroupName myRgStackRG `
-  -Name myRgStack `
-  -PurgeResources
-```
-
-If you delete a resource group that contains a stack, it deletes the stack and also detaches the resources that are contained in other resource groups.
-
 ### At the subscription level
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack
-```
-
-If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
-
-```azurepowershell
-Remove-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -PurgeResources
 ```
 
 ## Use remote templates, and template specs
@@ -536,6 +530,20 @@ New-AzResourceGroupDeploymentStack `
 - For information about the properties in template files, see [Understand the structure and syntax of ARM templates](./syntax.md).
 - To learn about exporting templates, see [Quickstart: Create and deploy ARM templates by using the Azure portal](quickstart-create-templates-use-the-portal.md).
 - For answers to common questions, see [Frequently asked questions about ARM templates](frequently-asked-questions.yml).
+
+## Troubleshooting
+
+- Both deploymentStacks and its snapshots contain some diagnostic information that is not displayed by default. When troubleshooting problems with an update, save the objects to analyze them further:
+```azurepowershell
+$stack =  Get-Az...DeploymentStack ...
+$snapshot = Get-Az...DeploymentStackSnapshot ... // If $stack.SnapshotId exists
+```
+- Check which stage of the deploymentStack update failed using `echo $stack.Error`
+    - Failure during deployment:
+        - If `$stack.DeploymentId` exists, check out more information about the underlying deployment failure by investigating its [deployment operations](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) 
+        - Otherwise, refer to the details found in `$stack.Error`
+    - Failure during purging resources:
+        - Check which resources failed to be purged properly be referring to `$snapshot.FailedResources`, in most cases, these failed resources will simply be detached and can be viewed by accessing `$snapshot.DetachedResources`. Successfully purged resources will be viewed by checking `$snapshot.PurgedResources`.
 
 ## Contributing
 
