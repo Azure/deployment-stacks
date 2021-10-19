@@ -2,7 +2,7 @@
 
 Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle. Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. Deployment Stacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
 
-A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/deployments?tabs=json) resource, Microsoft.Resources/deploymentStacks is a reusable resource type that can help you manage the resources your deployment creates. Any resource created using a deploymentStack is _managed_ by it, and subsequent updates to that deploymentStack, combined with the newest iteration's `UpdateBehavior`, will allow you to control the lifecycle of the resources managed by the deploymentStack . When a deploymentStack is updated, all previously managed resources are replaced with the resources provisioned by the latest template update. The UpdateBehavior property of the deploymentStack currently supports the following behaviors: 
+A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/en-us/azure/templates/microsoft.resources/deployments?tabs=json) resource, `Microsoft.Resources/deploymentStacks` is a reusable resource type that can help you manage the resources your deployment creates. Any resource created using a deploymentStack is _managed_ by it, and subsequent updates to that deploymentStack, combined with the newest iteration's `UpdateBehavior`, will allow you to control the lifecycle of the resources managed by the deploymentStack. When a deploymentStack is updated, the new set of managedResources will be determined by the resources defined in the template. The UpdateBehavior property of the deploymentStack determines what happens to these previously managed resources. It currently supports the following behaviors: 
 
 * `DetachResources`: Remove previously managed resources from the list of the stack's managedResources, but keep them in Azure.
 * `PurgeResources`: Remove previously managed resources from the list of the stack's managedResources, and also delete them so that they no longer exist in Azure.
@@ -13,7 +13,7 @@ To go through a deployment stacks tutorial, select [tutorial](./TUTORIAL.md).
 
 There are the known limitations with the private preview release `2021-05-01-preview`:
 
-- It is not recommended to use deploymentStacks in production environment since it is still in preview stages and can introduce breaking changes in the future.
+- It is not recommended to use deploymentStacks in production environment, since it is still in preview stages and can introduce breaking changes in the future.
 - Locking the resources managed by the deploymentStack is not available in the private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
 - What-if is not available in the private preview. What-if allows for evaluating changes before deploying.
 - A deploymentStack currently does not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
@@ -21,14 +21,27 @@ There are the known limitations with the private preview release `2021-05-01-pre
 - A deploymentStack does not gurantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 - DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 - You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) but you can use the ```bicep build``` command to author the template file for a deploymentStack update.
-- `-PurgeResources` for `Remove-AzSubscriptionDeploymentStack` is experimental and may not cleanup resources properly
+- In the preview, deleting a deploymentStack detaches all of its managed resources.  To delete all the managedResources, first update the deploymentStack with an empty template and set `-UpdateBehavior PurgeResources`, using the template below.  After that completes, delete the deploymentStack.
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [],
+  "outputs": {
+    "empty": {
+      "type": "bool",
+      "value": true
+    }
+  }
+}
+```
 
 ## Installation
 
 Use the following steps to install the deployment stacks PowerShell cmdlets:
 
-1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](/powershell/azure/install-az-ps).
-1. Open PowerShell 7 window as administrator.
+1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](https://docs.microsoft.com/en-us/powershell/azure/new-azureps-module-az).
+1. Open PowerShell as an administrator.
 1. Run the following command to set up a bypass for local signing policy.
 
     ```powershell
@@ -70,7 +83,6 @@ You can use any ARM template to create a deployment stack. The following templat
       "type": "string",
       "defaultValue": "[resourceGroup().location]"
     }
-
   },
   "variables": {
     "storageName1": "[concat(parameters('namePrefix'), uniqueString(resourceGroup().id), 'a')]",
@@ -328,15 +340,13 @@ ProvisioningState : succeeded
 UpdateBehavior    : detachResources
 Location          : eastus2
 CreationTime(UTC) : 8/19/2021 5:57:28 PM
-ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/mySubStackrg1', 
-                     '/subscriptions/<sub-id>/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfhgl6a', 
-                     '/subscriptions/a1bfa635-f2bf-42f1-86b5-848c674fc31/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfhgl6b', 
-                     '/subscriptions/<sub-id>/resourceGroups/mySubStackrg2'…}
+ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfhgl6a', 
+                     '/subscriptions/a1bfa635-f2bf-42f1-86b5-848c674fc31/resourceGroups/mySubStackrg1/providers/Microsoft.Storage/storageAccounts/stksubiyrmpdcyfhgl6b'…}
 DeploymentId      : /subscriptions/<sub-id>/providers/Microsoft.Resources/deployments/StorageSubStack-2021-08-19-18-22-33-d4216
 SnapshotId        : /subscriptions/<sub-id>/providers/Microsoft.Resources/deploymentStacks/mySubStack/snapshots/2021-08-19-18-22-33-d4216
 ```
 
-The two resource groups and the resources are listed under `ManagedResources`.
+The resources are listed under `ManagedResources`.
 
 ## Add/Remove resources
 
@@ -423,8 +433,9 @@ Name              : 2021-08-19-16-43-21-174c4
 ProvisioningState : succeeded
 UpdateBehavior    : detachResources
 CreationTime(UTC) : 8/19/2021 4:43:21 PM
-ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka',
-                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb'}
+ManagedResources  : {'/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkb',
+                     '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwkc'}
+DetachedResources : '/subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Storage/storageAccounts/devstorett73cak7aqhwka'
 DeploymentId      : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deployments/myRgStack-2021-08-19-16-43-21-174c4
 
 Id                : /subscriptions/<sub-id>/resourceGroups/myRgStackRg/providers/Microsoft.Resources/deploymentStacks/myRgStack/snapshots/2021-08-19-18-42-15-e871d
@@ -470,7 +481,7 @@ Remove-AzSubscriptionDeploymentStackSnapshot `
 
 ## Delete a stack
 
-Remove a deployment stack also remove the associated snapshots.
+Removing a deploymentStack also removes the all snapshots. All managed resources will be detached. To delete all the managedResources update the deploymentStack with an empty template and set `-UpdateBehavior PurgeResources`, then delete the deploymentStack. 
 
 ### At the resource group level
 
@@ -480,30 +491,11 @@ Remove-AzResourceGroupDeploymentStack `
   -Name myRgStack
 ```
 
-If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
-
-```azurepowershell
-Remove-AzResourceGroupDeploymentStack `
-  -ResourceGroupName myRgStackRG `
-  -Name myRgStack `
-  -PurgeResources
-```
-
-If you delete a resource group that contains a stack, it deletes the stack and also detaches the resources that are contained in other resource groups.
-
 ### At the subscription level
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack
-```
-
-If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
-
-```azurepowershell
-Remove-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -PurgeResources
 ```
 
 ## Use remote templates, and template specs
@@ -536,6 +528,29 @@ New-AzResourceGroupDeploymentStack `
 - For information about the properties in template files, see [Understand the structure and syntax of ARM templates](./syntax.md).
 - To learn about exporting templates, see [Quickstart: Create and deploy ARM templates by using the Azure portal](quickstart-create-templates-use-the-portal.md).
 - For answers to common questions, see [Frequently asked questions about ARM templates](frequently-asked-questions.yml).
+
+## Troubleshooting
+
+- Both deploymentStacks and its snapshots contain some diagnostic information that is not displayed by default. When troubleshooting problems with an update, save the objects to analyze them further:
+```azurepowershell
+$stack =  Get-AzSubscriptionDeploymentStack -Name 'myStack'
+```
+There may be more than one level for the error messages, to easily see them all at once:
+```
+$stack.Error | ConvertTo-Json -Depth 50
+
+If a deployment was created and the failure occurred during deployment, you can retrieve details of the deployment using the deployment commands.  For example if your template was deployed to a resource group:
+```
+Get-AzResourceGroupDeployment -Id $stack.DeploymentId
+```
+You can get more information from the [deployment operations](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) as needed.
+
+If the failure occurred as part of the deploymentStack operations, more details about the failure can be found on the snapshot:
+```
+Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $stack.SnapshotId
+```
+
+Information about resources that failed to purge can be found in the failedResources array on the snapshot.
 
 ## Contributing
 
