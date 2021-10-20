@@ -152,13 +152,13 @@ A sample parameters file.  Replace the value of **storagePrefix**.
 }
 ```
 
-Save the template file as **azuredeploy.json** to your computer, and save the parameter file as **azuredeploy.parameters.json** to your computer.
+Save the template file as ```azuredeploy.json``` to your computer, and save the parameter file as ```azuredeploy.parameters.json``` to your computer.
 
 ## Create a stack
 
 Use `New-AzSubscriptionDeploymentStack` to create a stack.
 
-```azurepowershell
+```PowerShell
 New-AzSubscriptionDeploymentStack `
   -Name mySubStack `
   -Location eastus2 `
@@ -168,14 +168,14 @@ New-AzSubscriptionDeploymentStack `
 
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the stack.
 
-```azurepowershell
+```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
 Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a stack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
 
-```azurepowershell
+```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
 ```
 
@@ -189,7 +189,7 @@ Modify the original template to remove one of the storage accounts from the firs
 
 Update the stack with the following cmdlet:
 
-```azurepowershell
+```PowerShell
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
@@ -200,14 +200,14 @@ Set-AzSubscriptionDeploymentStack `
 
 Once completed, use the following cmdlet to check the deployment status.
 
-```azurepowershell
+```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
 Use the following cmdlet to list the resources in the stack:
 
-```azurepowershell
+```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
 ```
 
@@ -215,7 +215,7 @@ You shall see only one resource in the first resource group of this stack.
 
 The detached resource is still managed by the first resource group:
 
-```azurepowershell
+```PowerShell
 Get-AzResource -ResourceGroupName <resource-group-name>
 ```
 
@@ -227,7 +227,7 @@ Modify the revised template from the last section to remove one of the storage a
 
 Update the stack with the following cmdlet:
 
-```azurepowershell
+```PowerShell
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
@@ -238,14 +238,14 @@ Set-AzSubscriptionDeploymentStack `
 
 Once completed, use the following cmdlet to check the deployment status.
 
-```azurepowershell
+```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
 Use the following cmdlet to list the resources in the stack:
 
-```azurepowershell
+```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
 ```
 
@@ -253,7 +253,7 @@ You shall see only one resource in the first resource group of this stack.
 
 The purged resource has been removed from the first resource group:
 
-```azurepowershell
+```PowerShell
 Get-AzResource -ResourceGroupName <resource-group-name>
 ```
 
@@ -267,7 +267,7 @@ If you follow all the step in this tutorial, the stack shall have three snapshot
 
 Use the following cmdlet to list the snapshots of a stack:
 
-```azurepowershell
+```PowerShell
 Get-AzSubscriptionDeploymentStackSnapshot `
   -StackName myRgStack
 ```
@@ -276,17 +276,17 @@ You shall see three snapshots listed.
 
 ## Delete the stack
 
-```azurepowershell
+```PowerShell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
 ```
 
-If you also want to delete the managed resources of the stack, use the `-Purge` switch:
+If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
 
-```azurepowershell
+```PowerShell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
-  -Purge
+  -PurgeResources
 ```
 
 ## Next steps
@@ -311,6 +311,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
 trademarks or logos is subject to and must follow
-[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general).
+[Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
