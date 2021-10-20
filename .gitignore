@@ -351,3 +351,6 @@ MigrationBackup/
 
 # local template parameters
 **/*.parameters.json
+
+# vscode settings file
+.vscode/settings.json
