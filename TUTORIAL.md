@@ -163,7 +163,7 @@ New-AzSubscriptionDeploymentStack `
   -Name mySubStack `
   -Location eastus2 `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json
+  -TemplateParameterFile azuredeploy.parameters.json
 ```
 
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the stack.
@@ -191,9 +191,9 @@ Update the stack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
-  -Name stack `
+  -Name mySubStack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior detachResources `
   -Location eastus
 ```
@@ -229,9 +229,9 @@ Update the stack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
-  -Name stack `
+  -Name mySubStack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior purgeResources `
   -Location eastus
 ```
@@ -276,18 +276,14 @@ You shall see three snapshots listed.
 
 ## Delete the stack
 
+In this private preview, deleting a stack detaches all of its managed resources.
+
 ```PowerShell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
 ```
 
-If you also want to delete the managed resources of the stack, use the `-PurgeResources` switch:
-
-```PowerShell
-Remove-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -PurgeResources
-```
+To delete all the managed resources, first update the deploymentStack with an empty template and set `UpdateBehavior` to `PurgeResources`. After the update, delete the stack.
 
 ## Next steps
 
