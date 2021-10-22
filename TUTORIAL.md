@@ -193,7 +193,7 @@ Update the stack with the following cmdlet:
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior detachResources `
   -Location eastus
 ```
@@ -231,7 +231,7 @@ Update the stack with the following cmdlet:
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior purgeResources `
   -Location eastus
 ```
