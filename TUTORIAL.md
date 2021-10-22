@@ -191,7 +191,7 @@ Update the stack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
-  -Name stack `
+  -Name mySubStack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
   -UpdateBehavior detachResources `
@@ -229,7 +229,7 @@ Update the stack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
-  -Name stack `
+  -Name mySubStack `
   -TemplateFile azuredeploy.json `
   -ParameterFile azuredeploy.parameters.json `
   -UpdateBehavior purgeResources `
@@ -269,7 +269,7 @@ Use the following cmdlet to list the snapshots of a stack:
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStackSnapshot `
-  -StackName myRgStack
+  -StackName mySubStack
 ```
 
 You shall see three snapshots listed.
