@@ -163,7 +163,7 @@ New-AzSubscriptionDeploymentStack `
   -Name mySubStack `
   -Location eastus2 `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json
+  -TemplateParameterFile azuredeploy.parameters.json
 ```
 
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the stack.
