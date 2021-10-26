@@ -495,7 +495,7 @@ Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-To delete all the managed resources, update the deploymentStack with an empty template and set `-UpdateBehavior purgeResources`, then delete the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources are not deleted.
+To delete all the managed resources, update the deploymentStack with an empty template and set `-UpdateBehavior purgeResources`, then delete the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources are not deleted. These resources need to be removed manually. 
 
 ## Use remote templates, and template specs
 
