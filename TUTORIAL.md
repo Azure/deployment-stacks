@@ -283,7 +283,7 @@ Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
 ```
 
-To delete all the managed resources, first update the deploymentStack with an empty template and set `UpdateBehavior` to `PurgeResources`. After the update, delete the stack.
+To delete all the managed resources, first update the deploymentStack with an empty template and set `UpdateBehavior` to `PurgeResources`. After the update, delete the stack. For more inforamtion, see [Delete a deploymentStack](./readme.md).
 
 ## Next steps
 
