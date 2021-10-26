@@ -138,14 +138,14 @@ The template used in this tutorial creates two resource groups and two resources
 }
 ```
 
-A sample parameters file.  Replace the value of **storagePrefix**.
+A sample parameters file.  Replace the value of **namePrefix**.
 
 ```json
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "storagePrefix": {
+    "namePrefix": {
       "value": "devstore"
     }
   }
@@ -269,7 +269,7 @@ Use the following cmdlet to list the snapshots of a stack:
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStackSnapshot `
-  -StackName myRgStack
+  -StackName mySubStack
 ```
 
 You shall see three snapshots listed.
