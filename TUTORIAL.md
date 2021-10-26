@@ -163,7 +163,7 @@ New-AzSubscriptionDeploymentStack `
   -Name mySubStack `
   -Location eastus2 `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json
+  -TemplateParameterFile azuredeploy.parameters.json
 ```
 
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the stack.
@@ -193,7 +193,7 @@ Update the stack with the following cmdlet:
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior detachResources `
   -Location eastus
 ```
@@ -231,7 +231,7 @@ Update the stack with the following cmdlet:
 Set-AzSubscriptionDeploymentStack `
   -Name stack `
   -TemplateFile azuredeploy.json `
-  -ParameterFile azuredeploy.parameters.json `
+  -TemplateParameterFile azuredeploy.parameters.json `
   -UpdateBehavior purgeResources `
   -Location eastus
 ```
