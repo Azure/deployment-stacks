@@ -1,17 +1,17 @@
-# Get started with the Deployment Stacks (Preview)
+# Get started with the DeploymentStacks (Preview)
 
-Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle. Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. Deployment Stacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
+Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle. Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. DeploymentStacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
 
 A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/azure/templates/microsoft.resources/deployments?tabs=json) resource, `Microsoft.Resources/deploymentStacks` is a reusable resource type that can help you manage the resources your deployment creates. Any resource created using a deploymentStack is _managed_ by it, and subsequent updates to that deploymentStack, combined with the newest iteration's `UpdateBehavior`, will allow you to control the lifecycle of the resources managed by the deploymentStack. When a deploymentStack is updated, the new set of managedResources will be determined by the resources defined in the template. The UpdateBehavior property of the deploymentStack determines what happens to these previously managed resources. It currently supports the following behaviors:
 
-* `DetachResources`: Remove previously managed resources from the list of the stack's managedResources, but keep them in Azure.
-* `PurgeResources`: Remove previously managed resources from the list of the stack's managedResources, and also delete them so that they no longer exist in Azure.
+* `DetachResources`: Remove previously managed resources from the list of the deploymentStack's managedResources, but keep them in Azure.
+* `PurgeResources`: Remove previously managed resources from the list of the deploymentStack's managedResources, and also delete them so that they no longer exist in Azure.
 
 To go through a deployment stacks tutorial, complete the installation of the client tools, select [tutorial](./TUTORIAL.md).
 
 ## Installation
 
-Use the following steps to install the deployment stacks PowerShell cmdlets:
+Use the following steps to install the deploymentStacks PowerShell cmdlets:
 
 1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](https://docs.microsoft.com/powershell/azure/new-azureps-module-az).
 1. Open PowerShell as an administrator.
@@ -21,7 +21,7 @@ Use the following steps to install the deployment stacks PowerShell cmdlets:
     Set-ExecutionPolicy Bypass -Scope Process
     ```
 
-1. Download the deployment stacks [package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
+1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
 
     ```powershell
     ./AzDeploymentStacksPrivatePreview.ps1
