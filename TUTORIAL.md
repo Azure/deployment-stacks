@@ -281,7 +281,7 @@ Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
 ```
 
-In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an empty template prior to deleting the deploymentStack.
+In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json) prior to deleting the deploymentStack.
 
 To delete all the managed resources, first update the deploymentStack with an empty template and set `UpdateBehavior` to `PurgeResources`. After the update, delete the stack. For more inforamtion, see [Delete a deploymentStack](./readme.md).
 

@@ -43,7 +43,7 @@ Use the following steps to install the deploymentStacks PowerShell cmdlets:
     Set-ExecutionPolicy Bypass -Scope Process
     ```
 
-1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases/), expand the package and then run the installation ps1 file and follow the instructions.
+1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
 
     ```powershell
     ./AzDeploymentStacksPrivatePreview.ps1
