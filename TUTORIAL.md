@@ -1,11 +1,11 @@
-# Tutorial: Deploy deployment stacks
+# Tutorial: Deploy deploymentStacks
 
-This tutorial shows you how to create, update, and remove a deployment stack.  You learn how to use the two modes of `UpdateBehavior`:
+This tutorial shows you how to create, update, and remove a deploymentStack.  You learn how to use the two modes of `UpdateBehavior`:
 
-- **detachResources**: remove the resource from the stack, but keep the resource in Azure.
-- **purgeResources**: remove the resource from the stack, and remove the resource from Azure.
+- **detachResources**: remove the resource from the deploymentStack, but keep the resource in Azure.
+- **purgeResources**: remove the resource from the deploymentStack, and remove the resource from Azure.
 
-For more information about deployment stacks, see the [readme](./README.md).
+For more information about deploymentStacks, see the [readme](./README.md).
 
 The template used in this tutorial creates two resource groups and two resources in each resource group:
 
@@ -154,9 +154,9 @@ A sample parameters file.  Replace the value of **namePrefix**.
 
 Save the template file as ```azuredeploy.json``` to your computer, and save the parameter file as ```azuredeploy.parameters.json``` to your computer.
 
-## Create a stack
+## Create a deploymentStack
 
-Use `New-AzSubscriptionDeploymentStack` to create a stack.
+Use `New-AzSubscriptionDeploymentStack` to create a deploymentStack.
 
 ```PowerShell
 New-AzSubscriptionDeploymentStack `
@@ -166,14 +166,14 @@ New-AzSubscriptionDeploymentStack `
   -TemplateParameterFile azuredeploy.parameters.json
 ```
 
-Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the stack.
+Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the deploymentStack.
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a stack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
+Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deploymentStack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
 
 ```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
@@ -183,11 +183,11 @@ You can also see the two resource groups and the resources from the [Azure porta
 
 ## Detach a resource
 
-The `detachResources` mode removes a resource from the stack, but keep the resource in Azure.
+The `detachResources` mode removes a resource from the deploymentStack, but keep the resource in Azure.
 
 Modify the original template to remove one of the storage accounts from the first resource group.
 
-Update the stack with the following cmdlet:
+Update the deploymentStack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
@@ -205,13 +205,13 @@ Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-Use the following cmdlet to list the resources in the stack:
+Use the following cmdlet to list the resources in the deploymentStack:
 
 ```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
 ```
 
-You shall see only one resource in the first resource group of this stack.
+You shall see only one resource in the first resource group of this deploymentStack.
 
 The detached resource is still managed by the first resource group:
 
@@ -221,11 +221,11 @@ Get-AzResource -ResourceGroupName <resource-group-name>
 
 ## Purge a resource
 
-The `purgeResources` mode removes the resource from the stack, and removes the resource from Azure.
+The `purgeResources` mode removes the resource from the deploymentStack, and removes the resource from Azure.
 
 Modify the revised template from the last section to remove one of the storage accounts from the second resource group.
 
-Update the stack with the following cmdlet:
+Update the deploymentStack with the following cmdlet:
 
 ```PowerShell
 Set-AzSubscriptionDeploymentStack `
@@ -243,13 +243,13 @@ Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-Use the following cmdlet to list the resources in the stack:
+Use the following cmdlet to list the resources in the deploymentStack:
 
 ```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
 ```
 
-You shall see only one resource in the first resource group of this stack.
+You shall see only one resource in the first resource group of this deploymentStack.
 
 The purged resource has been removed from the first resource group:
 
@@ -259,13 +259,13 @@ Get-AzResource -ResourceGroupName <resource-group-name>
 
 ## List the snapshots
 
-If you follow all the step in this tutorial, the stack shall have three snapshots:
+If you follow all the step in this tutorial, the deploymentStack shall have three snapshots:
 
-- when the stack is created
+- when the deploymentStack is created
 - when a resource is detached
 - when a resource is purged
 
-Use the following cmdlet to list the snapshots of a stack:
+Use the following cmdlet to list the snapshots of a deploymentStack:
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStackSnapshot `
@@ -274,20 +274,20 @@ Get-AzSubscriptionDeploymentStackSnapshot `
 
 You shall see three snapshots listed.
 
-## Delete the stack
-
-In this private preview, deleting a stack detaches all of its managed resources.
+## Delete the deploymentStack
 
 ```PowerShell
 Remove-AzSubscriptionDeploymentStack `
-  -Name mySubStack
+  -Name mySubStack `
 ```
+
+In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an empty template prior to deleting the deploymentStack.
 
 To delete all the managed resources, first update the deploymentStack with an empty template and set `UpdateBehavior` to `PurgeResources`. After the update, delete the stack. For more inforamtion, see [Delete a deploymentStack](./readme.md).
 
 ## Next steps
 
-To learn more about deployment stacks, see [tutorial](./TUTORIAL.md).
+To learn more about deploymentStacks, see [tutorial](./TUTORIAL.md).
 
 ## Contributing
 

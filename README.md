@@ -49,7 +49,7 @@ Use the following steps to install the deploymentStacks PowerShell cmdlets:
     ./AzDeploymentStacksPrivatePreview.ps1
     ```
 
-  To uninstall the module, run the same ps1 file and choose the **Uninstall module** option.
+  To uninstall the module, run the same ps1 file and choose the `Uninstall module` option.
 
 1. Set the current subscription context to the subscription for the private preview:
 
