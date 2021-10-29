@@ -1,4 +1,4 @@
-# Get started with the DeploymentStacks (Preview)
+# Get started with the deploymentStacks (Preview)
 
 Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle. Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. DeploymentStacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
 
