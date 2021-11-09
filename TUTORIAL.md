@@ -161,7 +161,7 @@ Use `New-AzSubscriptionDeploymentStack` to create a deploymentStack.
 ```PowerShell
 New-AzSubscriptionDeploymentStack `
   -Name mySubStack `
-  -Location eastus2 `
+  -Location eastus `
   -TemplateFile azuredeploy.json `
   -TemplateParameterFile azuredeploy.parameters.json
 ```
