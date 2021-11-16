@@ -31,6 +31,7 @@ Powershell Version:
 Correlation ID:
 Tenant ID:
 Timestamp of issue (please include time zone):
+Data Center (eg, West Central US, West Europe):
 
 **Additional context**
 Add any other context about the problem here.
