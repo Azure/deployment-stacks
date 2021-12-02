@@ -9,9 +9,10 @@
             "name": "emptyStack",
             "type": "Microsoft.Resources/deploymentStacks",
             "apiVersion": "2021-05-01-preview",
+            "location": "[deployment().location]",
             "properties": {
                 "updateBehavior": "purgeResources",
-                "deploymentScope": "[subscription().subscriptionId]",
+                "deploymentScope": "[subscription().id]",
                 "template": {
                     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
                     "contentVersion": "1.0.0.0",
