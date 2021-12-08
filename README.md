@@ -78,7 +78,7 @@ There are the known limitations with the private preview release `2021-05-01-pre
 * A deploymentStack does not guarantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
 * DeploymentStacks can currently only be created, updated, retrieved, and deleted through PowerShell and the REST API. CLI support is coming soon.
 * You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) but you can use the `bicep build` command to author the template file for a deploymentStack update.
-* In the preview, deleting a deploymentStack detaches all of its managed resources.  To delete all the managedResources, first update the deploymentStack with an [empty template](./test-templates/empty-template.json) and set `-UpdateBehavior PurgeResources`.  After that completes, delete the deploymentStack.
+* In the preview, deleting a deploymentStack detaches all of its managed resources.  To delete all the managedResources, first update the deploymentStack with an [empty template](./test-templates/empty-template.json) and set `-UpdateBehavior PurgeResources`.  After that completes, delete the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources (i.e. a VMSS resource is implicitly created when an AKS resource is created) are not deleted.
 
 ## Contributing
 

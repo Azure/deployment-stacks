@@ -281,7 +281,7 @@ Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
 ```
 
-In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json) prior to deleting the deploymentStack.
+In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json) prior to deleting the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources (i.e. a VMSS resource is implicitly created when an AKS resource is created) are not deleted.
 
 ## Next steps
 
