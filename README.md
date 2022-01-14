@@ -9,6 +9,22 @@ A "deploymentStack" is a grouping concept that allows for lifecycle operations t
 
 To go through a deployment stacks tutorial, complete the installation of the client tools, select [tutorial](./TUTORIAL.md).
 
+> The deploymentStacks preview is currently private, please treat this information as confidential and do not share publicly.
+
+## Feature Registration
+
+Use the following command to enable deploymentStacks in a subscription:
+
+```powershell
+Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
+```
+
+The feature will take a few minutes to register, you can check on the status by running the following command:
+
+```powershell
+Get-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
+```
+
 ## Installation
 
 Use the following steps to install the deploymentStacks PowerShell cmdlets:
@@ -17,24 +33,24 @@ Use the following steps to install the deploymentStacks PowerShell cmdlets:
 1. Open PowerShell as an administrator.
 1. Run the following command to set up a bypass for local signing policy.
 
-    ```powershell
-    Set-ExecutionPolicy Bypass -Scope Process
-    ```
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process
+```
 
 1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
 
-    ```powershell
+```powershell
     ./AzDeploymentStacksPrivatePreview.ps1
-    ```
+```
 
   To uninstall the module, run the same ps1 file and choose the `Uninstall module` option.
 
 1. Set the current subscription context to the subscription on-boarded for the private preview:
 
-    ```PowerShell
-    Connect-AzAccount
-    Set-AzContext -subscription "<subscription-id>"
-    ```
+```PowerShell
+Connect-AzAccount
+Set-AzContext -subscription "<subscription-id>"
+```
 
 ## Troubleshooting
 
