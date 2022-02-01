@@ -166,11 +166,27 @@ New-AzSubscriptionDeploymentStack `
   -TemplateParameterFile azuredeploy.parameters.json
 ```
 
+Use `Az Stack Sub Create` to create a deploymentStack.
+```CLI
+Az Stack Sub Create `
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json
+```
+
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the deploymentStack.
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
+```
+
+Use `Az Stack Sub Show` to check deployment status or list the deploymentStack.
+
+```CLI
+Az Stack Sub Show `
+  --name mySubStack
 ```
 
 Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deploymentStack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
@@ -198,11 +214,25 @@ Set-AzSubscriptionDeploymentStack `
   -Location eastus
 ```
 
+```CLI
+Az Stack Sub Create `
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json `
+  --update-behavior detachResources 
+```
+
 Once completed, use the following cmdlet to check the deployment status.
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
+```
+
+```CLI
+Az Stack Sub Show `
+  --name mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
@@ -236,11 +266,25 @@ Set-AzSubscriptionDeploymentStack `
   -Location eastus
 ```
 
+```CLI
+Az Stack Sub Create `
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json `
+  --update-behavior purgeResources 
+```
+
 Once completed, use the following cmdlet to check the deployment status.
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
+```
+
+```CLI
+Az Stack Sub Show `
+  --name mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
@@ -272,6 +316,11 @@ Get-AzSubscriptionDeploymentStackSnapshot `
   -StackName mySubStack
 ```
 
+```CLI
+Az Stack Snapshot Sub List `
+  --stack-name mySubStack
+```
+
 You shall see three snapshots listed.
 
 ## Delete the deploymentStack
@@ -279,6 +328,11 @@ You shall see three snapshots listed.
 ```PowerShell
 Remove-AzSubscriptionDeploymentStack `
   -Name mySubStack `
+```
+
+```CLI
+Az Stack Snapshot Sub Delete `
+  --stack-name mySubStack
 ```
 
 In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json) prior to deleting the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources (i.e. a VMSS resource is implicitly created when an AKS resource is created) are not deleted.
