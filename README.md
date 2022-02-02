@@ -58,7 +58,7 @@ Use the following steps to install the CLI configured with deploymentStacks:
 
 1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation MSI file and follow the instructions.
 
-  To uninstall the MSI, simply uninstall the CLI program from system's program list.
+  To uninstall the MSI, simply uninstall the CLI program from system's program list.  You must uninstall the preview version before installing a new version.
   
 
 ## Troubleshooting
