@@ -25,7 +25,7 @@ The feature will take a few minutes to register, you can check on the status by 
 Get-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
 ```
 
-## Installation
+## Installation (Powershell)
 
 Use the following steps to install the deploymentStacks PowerShell cmdlets:
 
@@ -51,6 +51,15 @@ Set-ExecutionPolicy Bypass -Scope Process
 Connect-AzAccount
 Set-AzContext -subscription "<subscription-id>"
 ```
+
+## Installation (CLI)
+
+Use the following steps to install the CLI configured with deploymentStacks:
+
+1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation MSI file and follow the instructions.
+
+  To uninstall the MSI, simply uninstall the CLI program from system's program list.  You must uninstall the preview version before installing a new version.
+  
 
 ## Troubleshooting
 
