@@ -169,10 +169,10 @@ New-AzSubscriptionDeploymentStack `
 Use `az stack sub create` to create a deploymentStack.
 ```CLI
 az stack sub create `
-  --n mySubStack `
-  --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json
+  -n mySubStack `
+  -l eastus `
+  -f azuredeploy.json `
+  -p azuredeploy.parameters.json
 ```
 
 Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the deploymentStack.
@@ -186,7 +186,7 @@ Use `az stack sub show` to check deployment status or list the deploymentStack.
 
 ```CLI
 az stack sub show `
-  --n mySubStack
+  -n mySubStack
 ```
 
 Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deploymentStack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
@@ -216,10 +216,10 @@ Set-AzSubscriptionDeploymentStack `
 
 ```CLI
 az stack sub create `
-  --n mySubStack `
-  --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json `
+  -n mySubStack `
+  -l eastus `
+  -f azuredeploy.json `
+  -p azuredeploy.parameters.json `
   --update-behavior detachResources 
 ```
 
@@ -232,7 +232,7 @@ Get-AzSubscriptionDeploymentStack `
 
 ```CLI
 az stack sub show `
-  --n mySubStack
+  -n mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
@@ -268,10 +268,10 @@ Set-AzSubscriptionDeploymentStack `
 
 ```CLI
 az stack sub create `
-  --n mySubStack `
-  --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json `
+  -n mySubStack `
+  -l eastus `
+  -f azuredeploy.json `
+  -p azuredeploy.parameters.json `
   --update-behavior purgeResources 
 ```
 
@@ -284,7 +284,7 @@ Get-AzSubscriptionDeploymentStack `
 
 ```CLI
 az stack sub show `
-  --n mySubStack
+  -n mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
