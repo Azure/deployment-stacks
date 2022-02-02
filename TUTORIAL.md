@@ -166,7 +166,7 @@ New-AzSubscriptionDeploymentStack `
   -TemplateParameterFile azuredeploy.parameters.json
 ```
 
-Use `Az Stack Sub Create` to create a deploymentStack.
+Use `az stack sub create` to create a deploymentStack.
 ```CLI
 Az Stack Sub Create `
   --n mySubStack `
@@ -182,7 +182,7 @@ Get-AzSubscriptionDeploymentStack `
   -Name mySubStack
 ```
 
-Use `Az Stack Sub Show` to check deployment status or list the deploymentStack.
+Use `az stack sub show` to check deployment status or list the deploymentStack.
 
 ```CLI
 Az Stack Sub Show `
@@ -215,7 +215,7 @@ Set-AzSubscriptionDeploymentStack `
 ```
 
 ```CLI
-Az Stack Sub Create `
+az stack sub create `
   --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
@@ -231,7 +231,7 @@ Get-AzSubscriptionDeploymentStack `
 ```
 
 ```CLI
-Az Stack Sub Show `
+az stack sub show `
   --n mySubStack
 ```
 
@@ -267,7 +267,7 @@ Set-AzSubscriptionDeploymentStack `
 ```
 
 ```CLI
-Az Stack Sub Create `
+az stack sub create `
   --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
@@ -283,7 +283,7 @@ Get-AzSubscriptionDeploymentStack `
 ```
 
 ```CLI
-Az Stack Sub Show `
+az stack sub show `
   --n mySubStack
 ```
 
@@ -317,7 +317,7 @@ Get-AzSubscriptionDeploymentStackSnapshot `
 ```
 
 ```CLI
-Az Stack Snapshot Sub List `
+az stack snapshot sub list `
   --stack-name mySubStack
 ```
 
@@ -331,7 +331,7 @@ Remove-AzSubscriptionDeploymentStack `
 ```
 
 ```CLI
-Az Stack Snapshot Sub Delete `
+az stack snapshot sub delete `
   --stack-name mySubStack
 ```
 
