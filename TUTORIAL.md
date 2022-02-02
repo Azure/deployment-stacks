@@ -168,7 +168,7 @@ New-AzSubscriptionDeploymentStack `
 
 Use `az stack sub create` to create a deploymentStack.
 ```CLI
-Az Stack Sub Create `
+az stack sub create `
   --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
@@ -185,7 +185,7 @@ Get-AzSubscriptionDeploymentStack `
 Use `az stack sub show` to check deployment status or list the deploymentStack.
 
 ```CLI
-Az Stack Sub Show `
+az stack sub show `
   --n mySubStack
 ```
 
