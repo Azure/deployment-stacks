@@ -169,7 +169,7 @@ New-AzSubscriptionDeploymentStack `
 Use `Az Stack Sub Create` to create a deploymentStack.
 ```CLI
 Az Stack Sub Create `
-  --name mySubStack `
+  --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
   --parameters azuredeploy.parameters.json
@@ -186,7 +186,7 @@ Use `Az Stack Sub Show` to check deployment status or list the deploymentStack.
 
 ```CLI
 Az Stack Sub Show `
-  --name mySubStack
+  --n mySubStack
 ```
 
 Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deploymentStack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
@@ -216,7 +216,7 @@ Set-AzSubscriptionDeploymentStack `
 
 ```CLI
 Az Stack Sub Create `
-  --name mySubStack `
+  --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
   --parameters azuredeploy.parameters.json `
@@ -232,7 +232,7 @@ Get-AzSubscriptionDeploymentStack `
 
 ```CLI
 Az Stack Sub Show `
-  --name mySubStack
+  --n mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
@@ -268,7 +268,7 @@ Set-AzSubscriptionDeploymentStack `
 
 ```CLI
 Az Stack Sub Create `
-  --name mySubStack `
+  --n mySubStack `
   --location eastus `
   --template-file azuredeploy.json `
   --parameters azuredeploy.parameters.json `
@@ -284,7 +284,7 @@ Get-AzSubscriptionDeploymentStack `
 
 ```CLI
 Az Stack Sub Show `
-  --name mySubStack
+  --n mySubStack
 ```
 
 Use the following cmdlet to list the resources in the deploymentStack:
