@@ -1,4 +1,4 @@
-# Tutorial: Deploy deploymentStacks
+# Tutorial: Work with Deployment Stacks
 
 This tutorial shows you how to create, update, and remove a deploymentStack.  You learn how to use the two modes of `UpdateBehavior`:
 
@@ -220,7 +220,7 @@ az stack sub create `
   -l eastus `
   -f azuredeploy.json `
   -p azuredeploy.parameters.json `
-  --update-behavior detachResources 
+  --update-behavior detachResources
 ```
 
 Once completed, use the following cmdlet to check the deployment status.
@@ -272,7 +272,7 @@ az stack sub create `
   -l eastus `
   -f azuredeploy.json `
   -p azuredeploy.parameters.json `
-  --update-behavior purgeResources 
+  --update-behavior purgeResources
 ```
 
 Once completed, use the following cmdlet to check the deployment status.
