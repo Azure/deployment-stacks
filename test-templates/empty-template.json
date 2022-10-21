@@ -8,5 +8,9 @@
   "resources": [
   ],
   "outputs": {
+    "deploymentName": {
+      "type": "string",
+      "value": "[deployment().name]"
+    }
   }
 }
