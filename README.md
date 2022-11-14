@@ -1,19 +1,25 @@
-# Get started with the deploymentStacks (Preview)
+# Get started with Deployment Stacks (Preview)
 
-Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle. Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. DeploymentStacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
+Azure customers find it extremely difficult to manage the lifecycle of a _collection_ of resources – while it’s easy to deploy resources together as a group, after the deployment finishes there is no single way to relate those resources together and manage their lifecycle.
 
-A "deploymentStack" is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/azure/templates/microsoft.resources/deployments?tabs=json) resource, `Microsoft.Resources/deploymentStacks` is a reusable resource type that can help you manage the resources your deployment creates. Any resource created using a deploymentStack is _managed_ by it, and subsequent updates to that deploymentStack, combined with the newest iteration's `UpdateBehavior`, will allow you to control the lifecycle of the resources managed by the deploymentStack. When a deploymentStack is updated, the new set of managedResources will be determined by the resources defined in the template. The UpdateBehavior property of the deploymentStack determines what happens to these previously managed resources. It currently supports the following behaviors:
+Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even tenants. deployment stacks will make it easy to manage the lifecycle of a collection resources that work together to create a solution.
+
+A _deployment stack_ is a grouping concept that allows for lifecycle operations to be performed on the defined group of resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/azure/templates/microsoft.resources/deployments?tabs=json) resource, `Microsoft.Resources/deployment stacks` is a reusable resource type that can help you manage the resources your deployment creates.
+
+Any resource created using a deployment stack is _managed_ by it, and subsequent updates to that deploymentStack, combined with the newest iteration's `UpdateBehavior`, will allow you to control the lifecycle of the resources managed by the deploymentStack. When a deploymentStack is updated, the new set of managedResources will be determined by the resources defined in the template.
+
+The `UpdateBehavior` property of the deploymentStack determines what happens to these previously managed resources. It currently supports the following behaviors:
 
 * `DetachResources`: Remove previously managed resources from the list of the deploymentStack's managedResources, but keep them in Azure.
 * `PurgeResources`: Remove previously managed resources from the list of the deploymentStack's managedResources, and also delete them so that they no longer exist in Azure.
 
 To go through a deployment stacks tutorial, complete the installation of the client tools, select [tutorial](./TUTORIAL.md).
 
-> The deploymentStacks preview is currently private, please treat this information as confidential and do not share publicly.
+> The deployment stacks preview is currently private, please treat this information as confidential and do not share publicly.
 
 ## Feature Registration
 
-Use the following command to enable deploymentStacks in a subscription:
+Use the following command to enable deployment stacks in a subscription:
 
 ```powershell
 Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
@@ -25,9 +31,9 @@ The feature will take a few minutes to register, you can check on the status by 
 Get-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
 ```
 
-## Installation (Powershell)
+## Installation (PowerShell)
 
-Use the following steps to install the deploymentStacks PowerShell cmdlets:
+Use the following steps to install the deployment stacks PowerShell cmdlets:
 
 1. Install the latest Azure Az PowerShell module.  See [Install the Azure Az PowerShell module](https://docs.microsoft.com/powershell/azure/new-azureps-module-az).
 1. Open PowerShell as an administrator.
@@ -37,7 +43,7 @@ Use the following steps to install the deploymentStacks PowerShell cmdlets:
 Set-ExecutionPolicy Bypass -Scope Process
 ```
 
-1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
+1. Download the [deployment stacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation ps1 file and follow the instructions.
 
 ```powershell
     ./AzDeploymentStacksPrivatePreview.ps1
@@ -49,21 +55,21 @@ Set-ExecutionPolicy Bypass -Scope Process
 
 ```PowerShell
 Connect-AzAccount
-Set-AzContext -subscription "<subscription-id>"
+Set-AzContext -subscription '<subscription-id>'
 ```
 
 ## Installation (CLI)
 
-Use the following steps to install the CLI configured with deploymentStacks:
+Use the following steps to install the CLI configured with deployment stacks:
 
-1. Download the [deploymentStacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation MSI file and follow the instructions.
+1. Download the [deployment stacks package](https://github.com/Azure/deployment-stacks/releases), expand the package and then run the installation MSI file and follow the instructions.
 
   To uninstall the MSI, simply uninstall the CLI program from system's program list.  You must uninstall the preview version before installing a new version.
-  
+
 
 ## Troubleshooting
 
-* Both deploymentStacks and its snapshots contain some diagnostic information that is not displayed by default. When troubleshooting problems with an update, save the objects to analyze them further:
+* Both deployment stacks and its snapshots contain some diagnostic information that is not displayed by default. When troubleshooting problems with an update, save the objects to analyze them further:
 
 ```Powershell
 $stack =  Get-AzSubscriptionDeploymentStack -Name 'myStack'
@@ -83,7 +89,7 @@ Get-AzResourceGroupDeployment -Id $stack.DeploymentId
 
 You can get more information from the [deployment operations](https://docs.microsoft.com/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) as needed.
 
-If the failure occurred as part of the deploymentStack operations, more details about the failure can be found on the snapshot:
+If the failure occurred as part of the deployment stack operations, more details about the failure can be found on the snapshot:
 
 ```PowerShell
 Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $stack.SnapshotId
@@ -93,15 +99,15 @@ Information about resources that failed to purge can be found in the failedResou
 
 ## Known Issues
 
-There are the known limitations with the private preview release `2021-05-01-preview`:
+The `2021-05-01-preview` private preview API version has the following limitations:
 
-* It is not recommended to use deploymentStacks in production environment, since it is still in preview stages and can introduce breaking changes in the future.
+* It is not recommended to use deployment stacks in production environment, since it is still in preview stages and can introduce breaking changes in the future.
 * Locking the resources managed by the deploymentStack is not available in the private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
 * What-if is not available in the private preview. What-if allows for evaluating changes before deploying.
 * A deploymentStack currently does not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
-* DeploymentStacks are currently limited to resource group or subscription scope for the private preview.
+* deployment stacks are currently limited to resource group or subscription scope for the private preview.
 * A deploymentStack does not guarantee the protection of `secureString` and `secureObject` parameters, as this release returns them back when requested.
-* You cannot currently create deploymentStacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) but you can use the `bicep build` command to author the template file for a deploymentStack update.
+* You cannot currently create deployment stacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview) but you can use the `bicep build` command to author the template file for a deploymentStack update.
 * In the preview, deleting a deploymentStack detaches all of its managed resources.  To delete all the managedResources, first update the deploymentStack with an [empty template](./test-templates/empty-template.json) and set `-UpdateBehavior PurgeResources`.  After that completes, delete the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources (i.e. a VMSS resource is implicitly created when an AKS resource is created) are not deleted.
 
 ## Contributing
