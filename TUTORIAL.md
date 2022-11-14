@@ -1,13 +1,11 @@
-# Tutorial: Deploy deploymentStacks
+# Tutorial: Create and manage your first deployment stack
 
-This tutorial shows you how to create, update, and remove a deploymentStack.  You learn how to use the two modes of `UpdateBehavior`:
+This tutorial shows you how to create, update, and remove a deployment stack.
 
-- **detachResources**: remove the resource from the deploymentStack, but keep the resource in Azure.
-- **purgeResources**: remove the resource from the deploymentStack, and remove the resource from Azure.
+For more information about deployment stacks, see the [readme](./README.md).
 
-For more information about deploymentStacks, see the [readme](./README.md).
-
-The template used in this tutorial creates two resource groups and two resources in each resource group:
+We begin with an Azure Resource Manager (ARM) deployment template that creates
+two resource groups and two storage accounts within each resource group:
 
 ```json
 {
@@ -138,7 +136,7 @@ The template used in this tutorial creates two resource groups and two resources
 }
 ```
 
-A sample parameters file.  Replace the value of **namePrefix**.
+Let's also use a sample parameter file.  Replace the value of **namePrefix** as necessary.
 
 ```json
 {
@@ -152,22 +150,16 @@ A sample parameters file.  Replace the value of **namePrefix**.
 }
 ```
 
-Save the template file as ```azuredeploy.json``` to your computer, and save the parameter file as ```azuredeploy.parameters.json``` to your computer.
+Save the template file as ```azuredeploy.json``` to your computer, and save the parameter file as
+```azuredeploy.parameters.json``` to your computer.
 
-## Create a deploymentStack
+> [!NOTE]
+> ARM templates and parameter files can have any valid file name. **azuredeploy** is simply a community convention.
 
-Use `New-AzSubscriptionDeploymentStack` to create a deploymentStack.
+## Create a deployment stack
 
-```PowerShell
-New-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -Location eastus `
-  -TemplateFile azuredeploy.json `
-  -TemplateParameterFile azuredeploy.parameters.json
-```
-
-Use `az stack sub create` to create a deploymentStack.
-```CLI
+Use `az stack sub create` to create a deployment stack.
+```azurecli
 az stack sub create `
   -n mySubStack `
   -l eastus `
@@ -175,21 +167,16 @@ az stack sub create `
   -p azuredeploy.parameters.json
 ```
 
-Use `Get-AzSubscriptionDeploymentStack` to check deployment status or list the deploymentStack.
+Use `az stack sub show` to check deployment status or list the deployment stack.
 
-```PowerShell
-Get-AzSubscriptionDeploymentStack `
-  -Name mySubStack
-```
-
-Use `az stack sub show` to check deployment status or list the deploymentStack.
-
-```CLI
+```azurecli
 az stack sub show `
   -n mySubStack
 ```
 
-Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deploymentStack.  Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources. You can only see a part of managed resources. To list all the managed resources:
+Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deployment stack.
+Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources.
+You can only see a part of managed resources. To list all the managed resources:
 
 ```PowerShell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
@@ -203,34 +190,20 @@ The `detachResources` mode removes a resource from the deploymentStack, but keep
 
 Modify the original template to remove one of the storage accounts from the first resource group.
 
-Update the deploymentStack with the following cmdlet:
+Update the deploymentStack with the following CLI command:
 
-```PowerShell
-Set-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -TemplateFile azuredeploy.json `
-  -TemplateParameterFile azuredeploy.parameters.json `
-  -UpdateBehavior detachResources `
-  -Location eastus
-```
-
-```CLI
+```azurecli
 az stack sub create `
   -n mySubStack `
   -l eastus `
   -f azuredeploy.json `
   -p azuredeploy.parameters.json `
-  --update-behavior detachResources 
+  --update-behavior detachResources
 ```
 
-Once completed, use the following cmdlet to check the deployment status.
+Once completed, use the following command to check the deployment status.
 
-```PowerShell
-Get-AzSubscriptionDeploymentStack `
-  -Name mySubStack
-```
-
-```CLI
+```azurecli
 az stack sub show `
   -n mySubStack
 ```
@@ -249,48 +222,34 @@ The detached resource is still managed by the first resource group:
 Get-AzResource -ResourceGroupName <resource-group-name>
 ```
 
-## Purge a resource
+## Delete a managed resource
 
-The `purgeResources` mode removes the resource from the deploymentStack, and removes the resource from Azure.
+The `purgeResources` mode removes the resource from the deployment stack, and removes the resource from Azure.
 
 Modify the revised template from the last section to remove one of the storage accounts from the second resource group.
 
-Update the deploymentStack with the following cmdlet:
+Update the deployment stack with the following command:
 
-```PowerShell
-Set-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-  -TemplateFile azuredeploy.json `
-  -TemplateParameterFile azuredeploy.parameters.json `
-  -UpdateBehavior purgeResources `
-  -Location eastus
-```
-
-```CLI
+```azurecli
 az stack sub create `
   -n mySubStack `
   -l eastus `
   -f azuredeploy.json `
   -p azuredeploy.parameters.json `
-  --update-behavior purgeResources 
+  --update-behavior purgeResources
 ```
 
 Once completed, use the following cmdlet to check the deployment status.
 
-```PowerShell
-Get-AzSubscriptionDeploymentStack `
-  -Name mySubStack
-```
-
-```CLI
+```azurecli
 az stack sub show `
   -n mySubStack
 ```
 
-Use the following cmdlet to list the resources in the deploymentStack:
+Use the following cmdlet to list the resources in the deployment stack:
 
-```PowerShell
-(Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
+```azurecli
+az stack sub list
 ```
 
 You shall see only one resource in the first resource group of this deploymentStack.
@@ -301,45 +260,39 @@ The purged resource has been removed from the first resource group:
 Get-AzResource -ResourceGroupName <resource-group-name>
 ```
 
-## List the snapshots
+## List deployment stack snapshots
 
-If you follow all the step in this tutorial, the deploymentStack shall have three snapshots:
+If you follow all the step in this tutorial, the deployment stack has three snapshots:
 
 - when the deploymentStack is created
 - when a resource is detached
 - when a resource is purged
 
-Use the following cmdlet to list the snapshots of a deploymentStack:
+Use the following command to list the snapshots of a deploymentStack:
 
-```PowerShell
-Get-AzSubscriptionDeploymentStackSnapshot `
-  -StackName mySubStack
-```
-
-```CLI
+```azurecli
 az stack snapshot sub list `
   --stack-name mySubStack
 ```
 
-You shall see three snapshots listed.
+You should see three snapshots listed.
 
-## Delete the deploymentStack
+## Delete the deployment stack
 
-```PowerShell
-Remove-AzSubscriptionDeploymentStack `
-  -Name mySubStack `
-```
-
-```CLI
+```azurecli
 az stack snapshot sub delete `
   --stack-name mySubStack
 ```
 
-In the private preview, you cannot purge resources while deleting the deploymentStack, any managed resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json) prior to deleting the deploymentStack. Note the scope resources (resource group, management group, subscription, and tenant) and the implicitly created resources (i.e. a VMSS resource is implicitly created when an AKS resource is created) are not deleted.
+In the private preview, you cannot purge resources while deleting the deploymentStack, any managed
+resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json)
+prior to deleting the deploymentStack. Note the scope resources (resource group, management group, subscription,
+and tenant) and the implicitly created resources (for example, a virtual machine scale set (VMSS) resource is
+implicitly created when an Azure Kubernetes Service (AKS) resource is created) are not deleted.
 
 ## Next steps
 
-To learn more about deploymentStacks, see [tutorial](./TUTORIAL.md).
+To learn more about deployment stacks, see [tutorial](./TUTORIAL.md).
 
 ## Contributing
 
@@ -360,5 +313,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
 trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
-Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
-Any use of third-party trademarks or logos are subject to those third-party's policies.
+Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion
+or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those
+third-party's policies.
