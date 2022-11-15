@@ -1,11 +1,32 @@
 # Tutorial: Create and manage your first deployment stack
 
-This tutorial shows you how to create, update, and remove a deployment stack.
+Deployment stacks are a logical grouping concept that makes it easier to control
+your Azure deployments throughout their lifecycle. With deployment stacks you
+combine the DevOps principle of _infrastructure as a code_ with the power of
+Azure Resource Manager (ARM).
 
 For more information about deployment stacks, see the [readme](./README.md).
 
+In this tutorial you'll learn how to create, modify, and delete a new deployment
+stack by using the Deployment Stacks Command-Line Interface (CLI).
+
+## Install the tooling
+
+To install the Deployment Stacks CLI, please see <TO DO>.
+
+## Set up our ARM deployment template
+
 We begin with an Azure Resource Manager (ARM) deployment template that creates
-two resource groups and two storage accounts within each resource group:
+two resource groups and two storage accounts within each resource group. If you use
+the values in the following ARM template and parameter file, your **mySubStack**
+deployment stack will look like this:
+
+- Resource group: devstorerg1
+  - Storage account: devstore<unique-id>
+  - Storage account: devstore<unique-id>
+- Resource  group: devstorerg2
+  - Storage account: devstore<unique-id>
+  - Storage account: devstore<unique-id>
 
 ```json
 {
@@ -136,7 +157,8 @@ two resource groups and two storage accounts within each resource group:
 }
 ```
 
-Let's also use a sample parameter file.  Replace the value of **namePrefix** as necessary.
+Parameter files make ARM templates more modular and flexible. Let's add a simple
+parameter file; replace the value of **namePrefix** as you wish.
 
 ```json
 {
@@ -150,151 +172,138 @@ Let's also use a sample parameter file.  Replace the value of **namePrefix** as 
 }
 ```
 
-Save the template file as ```azuredeploy.json``` to your computer, and save the parameter file as
-```azuredeploy.parameters.json``` to your computer.
+Save the template file as `azuredeploy.json` to your computer, and save the parameter file as
+`azuredeploy.parameters.json`.
 
 > [!NOTE]
-> ARM templates and parameter files can have any valid file name. **azuredeploy** is simply a community convention.
+> ARM templates and parameter files can have any valid file name. **azuredeploy** is
+simply a community convention.
 
 ## Create a deployment stack
 
 Use `az stack sub create` to create a deployment stack.
+
 ```azurecli
 az stack sub create `
-  -n mySubStack `
-  -l eastus `
-  -f azuredeploy.json `
-  -p azuredeploy.parameters.json
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json
 ```
 
-Use `az stack sub show` to check deployment status or list the deployment stack.
+Use `az stack sub show` to check deployment status or list your deployment stacks
+defined created in the targeted Azure scope.
 
 ```azurecli
 az stack sub show `
-  -n mySubStack
+  --name mySubStack
 ```
 
-Notice in the output, `ProvisioningState` is `initializing`. It takes a few moments to create a deployment stack.
-Once completed, `ProvisioningState` is `succeeded`. `ManagedResources` shows the managed resources.
-You can only see a part of managed resources. To list all the managed resources:
+## List deployment stack resources
 
-```PowerShell
-(Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
+To view the managed resources enclosed within a deployment stack, use...<TO DO>
+
+## Update a deployment stack
+
+When you manage your Azure deployments with deployment stacks, you service those deployments by
+modifying the underlying ARM deployment templates. For instance, modify the following line in
+the previously listed ARM template to simulate a configuration change, changing `Standard_LRS` to
+`Standard_GRS`.
+
+```json
+       "sku": {
+        "name": "Standard_LRS"
+       },
 ```
 
-You can also see the two resource groups and the resources from the [Azure portal](https://portal.azure.com).
+To update the deployment stack, simply run `az stack sub create` again and confirm you
+want to overwrite the existing stack definition:
+
+```azurecli
+az stack sub create `
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json `
+```
 
 ## Detach a resource
 
-The `detachResources` mode removes a resource from the deploymentStack, but keep the resource in Azure.
+By default, deployment stacks detach and do not delete resources when they are no longer contained
+within the stack's management scope.
 
-Modify the original template to remove one of the storage accounts from the first resource group.
+To test the default detach capability, find and remove one of the storage account definitions in
+your ARM template. For instance, remove the following JSON element from your first
+resource group:
 
-Update the deploymentStack with the following CLI command:
-
-```azurecli
-az stack sub create `
-  -n mySubStack `
-  -l eastus `
-  -f azuredeploy.json `
-  -p azuredeploy.parameters.json `
-  --update-behavior detachResources
+```json
+      {
+       "type": "Microsoft.Storage/storageAccounts",
+       "apiVersion": "2019-04-01",
+       "name": "[variables('storageNameA')]",
+       "location": "[parameters('location')]",
+       "sku": {
+        "name": "Standard_GRS"
+       },
+       "kind": "StorageV2",
+       "properties": {}
+      },
 ```
 
-Once completed, use the following command to check the deployment status.
+Next, run ``az stack sub create`` again to update the stack.
 
-```azurecli
-az stack sub show `
-  -n mySubStack
-```
-
-Use the following cmdlet to list the resources in the deploymentStack:
-
-```PowerShell
-(Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
-```
-
-You shall see only one resource in the first resource group of this deploymentStack.
-
-The detached resource is still managed by the first resource group:
-
-```PowerShell
-Get-AzResource -ResourceGroupName <resource-group-name>
-```
+After the deployment succeeds, you should still see the detached storage account in your
+subscription.
 
 ## Delete a managed resource
 
-The `purgeResources` mode removes the resource from the deployment stack, and removes the resource from Azure.
+To instruct Azure to delete detached resources, update the stack with **az stack sub create**
+and pass one of the following parameters:
 
-Modify the revised template from the last section to remove one of the storage accounts from the second resource group.
+- `--delete-all`: Flag to indicate delete rather than detach for resources and resource groups
+- `--delete-resource-groups`: Flag to indicate delete rather than detach for resource groups only
 
-Update the deployment stack with the following command:
+Update the deployment stack by running the following command:
 
 ```azurecli
 az stack sub create `
-  -n mySubStack `
-  -l eastus `
-  -f azuredeploy.json `
-  -p azuredeploy.parameters.json `
-  --update-behavior purgeResources
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json `
+  --delete-all
 ```
 
-Once completed, use the following cmdlet to check the deployment status.
-
-```azurecli
-az stack sub show `
-  -n mySubStack
-```
-
-Use the following cmdlet to list the resources in the deployment stack:
-
-```azurecli
-az stack sub list
-```
-
-You shall see only one resource in the first resource group of this deploymentStack.
-
-The purged resource has been removed from the first resource group:
-
-```PowerShell
-Get-AzResource -ResourceGroupName <resource-group-name>
-```
+You should see the storage accounts still within the deployment stack's management
+scope still exist, but the storage accounts you removed from the ARM template have
+been deleted in Azure.
 
 ## List deployment stack snapshots
 
-If you follow all the step in this tutorial, the deployment stack has three snapshots:
-
-- when the deploymentStack is created
-- when a resource is detached
-- when a resource is purged
-
-Use the following command to list the snapshots of a deploymentStack:
-
-```azurecli
-az stack snapshot sub list `
-  --stack-name mySubStack
-```
-
-You should see three snapshots listed.
+<TO DO>
 
 ## Delete the deployment stack
 
+To clean up the environment, run the following CLI command to delete the entire deployment stack.
+
+> [!NOTE]
+> If you run **az stack sub delete** without `--delete-all`, `--delete-resource-groups`, or
+`--delete-resources`, the managed resources will be detached but not deleted.
+
 ```azurecli
-az stack snapshot sub delete `
-  --stack-name mySubStack
+az stack sub delete `
+  --name mySubStack `
+  --delete-all
 ```
 
-In the private preview, you cannot purge resources while deleting the deploymentStack, any managed
-resource will be detached.  You can still purge resources using an [empty template](./test-templates/empty-template.json)
-prior to deleting the deploymentStack. Note the scope resources (resource group, management group, subscription,
-and tenant) and the implicitly created resources (for example, a virtual machine scale set (VMSS) resource is
-implicitly created when an Azure Kubernetes Service (AKS) resource is created) are not deleted.
+You should find that besides the deployment stack resource, the deployed resource groups and
+storage accounts were also removed.
 
 ## Next steps
 
-To learn more about deployment stacks, see [tutorial](./TUTORIAL.md).
+To learn more about deployment stacks, see the [tutorial](./TUTORIAL.md).
 
-## Contributing
+## Contribute
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
