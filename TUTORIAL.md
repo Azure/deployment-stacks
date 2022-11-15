@@ -12,172 +12,36 @@ stack by using the Deployment Stacks Command-Line Interface (CLI).
 
 ## Install the tooling
 
-To install the Deployment Stacks CLI, please see <TO DO>.
+To install the Deployment Stacks CLI, check the [readme](./README.md).
 
 ## Set up our ARM deployment template
 
-We begin with an Azure Resource Manager (ARM) deployment template that creates
-two resource groups and two storage accounts within each resource group. If you use
-the values in the following ARM template and parameter file, your **mySubStack**
-deployment stack will look like this:
+We begin with a Bicep deployment that creates two resource groups and two public IP addresses
+within each resource group. If you use the the module script's parameter defaults,
+then your resulting **mySubStack** deployment stack will look like this:
 
-- Resource group: devstorerg1
-  - Storage account: devstore<unique-id>
-  - Storage account: devstore<unique-id>
-- Resource  group: devstorerg2
-  - Storage account: devstore<unique-id>
-  - Storage account: devstore<unique-id>
+- Resource group: test-rg1
+  - Public IP address: myPubIP1
+  - Public IP address: myPubIP2
+- Resource  group: test-rg2
+  - Public IP address: myPubIP3
+  - Public IP address: myPubIP4
 
-```json
-{
-  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "namePrefix": {
-      "type": "string",
-      "minLength": 3,
-      "maxLength": 11
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[deployment().location]"
-    }
-  },
-  "variables": {
-    "rgName1": "[concat(parameters('namePrefix'), 'rg1')]",
-    "rgName2": "[concat(parameters('namePrefix'), 'rg2')]",
-    "storageNameA": "[concat(parameters('namePrefix'), uniqueString(subscription().id), 'a')]",
-    "storageNameB": "[concat(parameters('namePrefix'), uniqueString(subscription().id), 'b')]",
-    "storageNameC": "[concat(parameters('namePrefix'), uniqueString(subscription().id), 'c')]",
-    "storageNameD": "[concat(parameters('namePrefix'), uniqueString(subscription().id), 'd')]"
-  },
-  "resources": [
-    {
-      "type": "Microsoft.Resources/resourceGroups",
-      "apiVersion": "2020-06-01",
-      "name": "[variables('rgName1')]",
-      "location": "[parameters('location')]",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
-      "name": "stackDeployment",
-      "resourceGroup": "[variables('rgName1')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('rgName1'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2019-04-01",
-              "name": "[variables('storageNameA')]",
-              "location": "[parameters('location')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {}
-            },
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2019-04-01",
-              "name": "[variables('storageNameB')]",
-              "location": "[parameters('location')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {}
-            }
-          ],
-          "outputs": {}
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Resources/resourceGroups",
-      "apiVersion": "2020-06-01",
-      "name": "[variables('rgName2')]",
-      "location": "[parameters('location')]",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
-      "name": "stackDeployment",
-      "resourceGroup": "[variables('rgName2')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/resourceGroups/', variables('rgName2'))]"
-      ],
-      "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2019-04-01",
-              "name": "[variables('storageNameC')]",
-              "location": "[parameters('location')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {}
-            },
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2019-04-01",
-              "name": "[variables('storageNameD')]",
-              "location": "[parameters('location')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {}
-            }
-          ],
-          "outputs": {}
-        }
-      }
-    }
-  ],
-  "outputs": {}
-}
+Start by creating a Bicep module file named **main.bicep**:
+
+```bicep
+<TO DO>
 ```
 
-Parameter files make ARM templates more modular and flexible. Let's add a simple
-parameter file; replace the value of **namePrefix** as you wish.
+Next, create two Bicep scripts to define the public IP address resources:
 
-```json
-{
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "namePrefix": {
-      "value": "devstore"
-    }
-  }
-}
+```bicep
+<TO DO>
 ```
-
-Save the template file as `azuredeploy.json` to your computer, and save the parameter file as
-`azuredeploy.parameters.json`.
 
 > [!NOTE]
-> ARM templates and parameter files can have any valid file name. **azuredeploy** is
-simply a community convention.
+> Bicep files can have any valid file name. **main** is
+> simply a community convention, similar to how **azuredeploy** is used as a conventual Azure Resource Manager (ARM) template file name.
 
 ## Create a deployment stack
 
@@ -206,7 +70,7 @@ To view the managed resources enclosed within a deployment stack, use...<TO DO>
 ## Update a deployment stack
 
 When you manage your Azure deployments with deployment stacks, you service those deployments by
-modifying the underlying ARM deployment templates. For instance, modify the following line in
+modifying the underlying Bicep or ARM deployment templates. For instance, modify the following line in
 the previously listed ARM template to simulate a configuration change, changing `Standard_LRS` to
 `Standard_GRS`.
 
@@ -255,13 +119,41 @@ Next, run ``az stack sub create`` again to update the stack.
 After the deployment succeeds, you should still see the detached storage account in your
 subscription.
 
+## Protect managed resources against deletion
+
+The `--deny-delete` CLI parameter places a special lock on managed resources that prevents them
+from being deleted by unauthorized security principals (be default, everyone).
+
+Following are the relevant `az stack sub create` parameters:
+
+- `deny-settings-mode`:
+- `deny-settings-excluded-principals`:
+- `deny-settings-apply-to-child-scopes`:
+- `deny-settings-excluded-actions`:
+
+To apply a `denyDelete` lock to your deployment stack, simply update your deployment stack snapshot,
+specifying the appropriate parameter(s):
+
+```azurecli
+az stack sub create `
+  --name mySubStack `
+  --location eastus `
+  --template-file azuredeploy.json `
+  --parameters azuredeploy.parameters.json `
+  --deny-settings-mode "denyDelete"
+```
+
+Test that the `denyDelete` works as expected by signing into the Azure portal and attempting to
+delete one of the deployment stack's managed public IP addresses. The request should fail.
+
 ## Delete a managed resource
 
 To instruct Azure to delete detached resources, update the stack with **az stack sub create**
 and pass one of the following parameters:
 
-- `--delete-all`: Flag to indicate delete rather than detach for resources and resource groups
-- `--delete-resource-groups`: Flag to indicate delete rather than detach for resource groups only
+- `--delete-all`: Flag to indicate delete rather than detach for managed resources and resource groups
+- `--delete-resources`: Flag to indicate delete rather than attach for managed resources only
+- `--delete-resource-groups`: Flag to indicate delete rather than detach for managed resource groups only
 
 Update the deployment stack by running the following command:
 
@@ -287,8 +179,8 @@ been deleted in Azure.
 To clean up the environment, run the following CLI command to delete the entire deployment stack.
 
 > [!NOTE]
-> If you run **az stack sub delete** without `--delete-all`, `--delete-resource-groups`, or
-`--delete-resources`, the managed resources will be detached but not deleted.
+> If you run `az stack sub delete` without the `--delete-all`, `--delete-resource-groups`, or
+`--delete-resources` parameters, the managed resources will be detached (unmanaged), but not deleted.
 
 ```azurecli
 az stack sub delete `
