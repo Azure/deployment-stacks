@@ -7,8 +7,8 @@ Azure Resource Manager (ARM).
 
 For more information about deployment stacks, see the [readme](./README.md).
 
-In this tutorial you'll learn how to create, modify, and delete a new deployment
-stack by using the Deployment Stacks Command-Line Interface (CLI).
+In this tutorial you'll use the Deployment Stacks Command-Line Interface (CLI)
+to create, modify, and delete a new deployment stack.
 
 ## Install the tooling
 
@@ -16,27 +16,98 @@ To install the Deployment Stacks CLI, check the [readme](./README.md).
 
 ## Set up our ARM deployment template
 
-We begin with a Bicep deployment that creates two resource groups and two public IP addresses
-within each resource group. If you use the the module script's parameter defaults,
+We begin with a Bicep deployment that creates two resource groups with one
+public IP address within each resource group. If you use the the module script's parameter defaults,
 then your resulting **mySubStack** deployment stack will look like this:
 
 - Resource group: test-rg1
   - Public IP address: myPubIP1
-  - Public IP address: myPubIP2
 - Resource  group: test-rg2
-  - Public IP address: myPubIP3
-  - Public IP address: myPubIP4
+  - Public IP address: myPubIP2
 
 Start by creating a Bicep module file named **main.bicep**:
 
 ```bicep
-<TO DO>
+targetScope='subscription'
+
+param resourceGroupName1 string = 'test-rg1'
+param resourceGroupName2 string = 'test-rg2'
+param resourceGroupLocation string = 'eastus'
+
+resource testrg1 'Microsoft.Resources/resourceGroups@2021-01-01' = {
+  name: resourceGroupName1
+  location: resourceGroupLocation
+}
+
+resource testrg2 'Microsoft.Resources/resourceGroups@2021-01-01' = {
+  name: resourceGroupName2
+  location: resourceGroupLocation
+}
+
+module firstPIP './pip1.bicep' = if (resourceGroupName1 == 'test-rg1') {
+  name: 'publicIP1'
+  scope: testrg1
+  params: {
+    pubIPName: 'publicIP1'
+    location: resourceGroupLocation
+    allocationMethod: 'Dynamic'
+    skuName: 'Basic'
+  }
+}
+
+module secondPIP './pip1.bicep' = if (resourceGroupName2 == 'test-rg2') {
+  name: 'publicIP2'
+  scope: testrg2
+  params: {
+    pubIPName: 'publicIP2'
+    location: resourceGroupLocation
+    allocationMethod: 'Dynamic'
+    skuName: 'Basic'
+  }
+}
 ```
 
-Next, create two Bicep scripts to define the public IP address resources:
+Next, create two Bicep scripts to define each public IP address resource. Following is a
+sample script named `pip1.bicep`:
 
 ```bicep
-<TO DO>
+param location string = 'eastus'
+param pubIPName string
+param allocationMethod string
+param skuName string
+
+resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+  name:  pubIPName
+  location: location
+  sku: {
+    name:  skuName
+    tier:  'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: allocationMethod
+  }
+}
+```
+
+And here is a sample definition for the second public IP address named `pip2.bicep`:
+
+```bicep
+param location string = 'eastus'
+param pubIPName string
+param allocationMethod string
+param skuName string
+
+resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
+  name:  pubIPName
+  location: location
+  sku: {
+    name:  skuName
+    tier:  'Regional'
+  }
+  properties: {
+    publicIPAllocationMethod: allocationMethod
+  }
+}
 ```
 
 > [!NOTE]
@@ -51,8 +122,7 @@ Use `az stack sub create` to create a deployment stack.
 az stack sub create `
   --name mySubStack `
   --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json
+  --template-file main.bicep
 ```
 
 Use `az stack sub show` to check deployment status or list your deployment stacks
@@ -65,59 +135,42 @@ az stack sub show `
 
 ## List deployment stack resources
 
-To view the managed resources enclosed within a deployment stack, use...<TO DO>
+During private preview, Deployment stacks does not have an Azure portal graphical user interface (GUI).
+To view the managed resources enclosed within a deployment stack, use the following
+Azure PowerShell command:
+
+> [!NOTE]
+> See the [readme](./README.md) for instructions on installing the deployment stacks PowerShell module.
+
+```powershell
+(Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
+
+```
 
 ## Update a deployment stack
 
 When you manage your Azure deployments with deployment stacks, you service those deployments by
-modifying the underlying Bicep or ARM deployment templates. For instance, modify the following line in
-the previously listed ARM template to simulate a configuration change, changing `Standard_LRS` to
-`Standard_GRS`.
+modifying the underlying Bicep or ARM deployment templates and re-running `az stack sub create`.
 
-```json
-       "sku": {
-        "name": "Standard_LRS"
-       },
+For instance, edit `main.bicep` for the `firstPIP` module and update the `allocationMethod`
+property to `Static`:
+
+```bicep
+  allocationMethod: 'Static'
 ```
 
-To update the deployment stack, simply run `az stack sub create` again and confirm you
+To update the deployment stack, run `az stack sub create` again and confirm you
 want to overwrite the existing stack definition:
 
 ```azurecli
 az stack sub create `
   --name mySubStack `
   --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json `
+  --template-file main.bicep
 ```
 
-## Detach a resource
-
-By default, deployment stacks detach and do not delete resources when they are no longer contained
-within the stack's management scope.
-
-To test the default detach capability, find and remove one of the storage account definitions in
-your ARM template. For instance, remove the following JSON element from your first
-resource group:
-
-```json
-      {
-       "type": "Microsoft.Storage/storageAccounts",
-       "apiVersion": "2019-04-01",
-       "name": "[variables('storageNameA')]",
-       "location": "[parameters('location')]",
-       "sku": {
-        "name": "Standard_GRS"
-       },
-       "kind": "StorageV2",
-       "properties": {}
-      },
-```
-
-Next, run ``az stack sub create`` again to update the stack.
-
-After the deployment succeeds, you should still see the detached storage account in your
-subscription.
+Sign into the Azure portal, check the properties of the `publicIP` resource and verify its
+address allocation method is now static instead of dynamic.
 
 ## Protect managed resources against deletion
 
@@ -126,25 +179,38 @@ from being deleted by unauthorized security principals (be default, everyone).
 
 Following are the relevant `az stack sub create` parameters:
 
-- `deny-settings-mode`:
-- `deny-settings-excluded-principals`:
-- `deny-settings-apply-to-child-scopes`:
-- `deny-settings-excluded-actions`:
+- `deny-settings-mode`: Defines how resources deployed by the deployment stack are locked. Valid values are <TO DO>
+- `deny-settings-excluded-principals`: Comma-separated list of Azure Active Directory (Azure AD) principal IDs excluded from the lock. Up to five principals are allowed
+- `deny-settings-apply-to-child-scopes`: Deny settings will be applied to child Azure management scopes
+- `deny-settings-excluded-actions`: List of role-based access control (RBAC) management operations excluded from the deny settings. Up to 200 actions are allowed
 
-To apply a `denyDelete` lock to your deployment stack, simply update your deployment stack snapshot,
+To apply a `denyDelete` lock to your deployment stack, update your deployment stack definition,
 specifying the appropriate parameter(s):
 
 ```azurecli
 az stack sub create `
   --name mySubStack `
   --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json `
+  --template-file main.bicep `
   --deny-settings-mode "denyDelete"
 ```
 
-Test that the `denyDelete` works as expected by signing into the Azure portal and attempting to
-delete one of the deployment stack's managed public IP addresses. The request should fail.
+Verify the `denyDelete` lock works as expected by signing into the Azure portal and attempting to
+delete `publicIP1` or `publicIP2`. The request should fail.
+
+## Detach a resource
+
+By default, deployment stacks detach and do not delete resources when they are no longer contained
+within the stack's management scope.
+
+To test the default detach capability, remove one of the public IP address definitions in
+your `main.bicep` script.
+
+Next, run ``az stack sub create`` again to update the stack.
+
+After the deployment succeeds, you should still see the detached storage account in your
+subscription. When you list the stack's managed resources, you should _not_ see the public IP
+address you detached.
 
 ## Delete a managed resource
 
@@ -161,22 +227,21 @@ Update the deployment stack by running the following command:
 az stack sub create `
   --name mySubStack `
   --location eastus `
-  --template-file azuredeploy.json `
-  --parameters azuredeploy.parameters.json `
-  --delete-all
+  --template-file main.bicep `
+  --delete-resources
 ```
 
-You should see the storage accounts still within the deployment stack's management
-scope still exist, but the storage accounts you removed from the ARM template have
-been deleted in Azure.
+If you removed one of the public IP addresses from your Bicep deployment script, then after
+running the code above you should observe:
 
-## List deployment stack snapshots
-
-<TO DO>
+- The resource group containing the removed public IP address still exits
+- The removed public IP address is deleted
+- The other resource group and public IP address still exist
 
 ## Delete the deployment stack
 
-To clean up the environment, run the following CLI command to delete the entire deployment stack.
+To remove the deployment stack and its managed resources from your Azure subscription, run the following CLI
+command to delete the entire deployment stack.
 
 > [!NOTE]
 > If you run `az stack sub delete` without the `--delete-all`, `--delete-resource-groups`, or
@@ -188,8 +253,10 @@ az stack sub delete `
   --delete-all
 ```
 
-You should find that besides the deployment stack resource, the deployed resource groups and
-storage accounts were also removed.
+Run `az stack sub list` to verify the deployment stack resource is deleted.
+
+You should also note in the Azure portal the resource groups and remaining
+public IP address have been deleted.
 
 ## Next steps
 
