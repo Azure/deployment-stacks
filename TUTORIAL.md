@@ -1,9 +1,10 @@
 # Tutorial: Create and manage your first deployment stack
 
-Deployment stacks are a logical grouping concept that makes it easier to control
-your Azure deployments throughout their lifecycle. With deployment stacks you
-combine the DevOps principle of _infrastructure as a code_ with the power of
-Azure Resource Manager (ARM).
+A _deployment stack_ is a native Azure resource type that enables you to manage
+Azure resources as a single unit at different Azure management scopes.
+
+This tutorial walks you through an Azure deployment stack example that uses a Bicep
+module template and associated Bicep resource template.
 
 For more information about deployment stacks, see the [readme](./README.md).
 
@@ -16,16 +17,17 @@ To install the Deployment Stacks CLI, check the [readme](./README.md).
 
 ## Set up our ARM deployment template
 
-We begin with a Bicep deployment that creates two resource groups with one
-public IP address within each resource group. If you use the the module script's parameter defaults,
+We begin with an Azure deployment authored with Bicep templates that creates two resource groups with one
+public IP address within each resource group. If you use the the module template's parameter defaults,
 then your resulting **mySubStack** deployment stack will look like this:
 
-- Resource group: test-rg1
-  - Public IP address: myPubIP1
-- Resource  group: test-rg2
-  - Public IP address: myPubIP2
+By deploying this Bicep template with parameter default values, you'll create two resource groups
+(test-rg1 and test-rg2) with one public IP address resource (publicIP1 and publicIP2, respectively)
+in each respective group.
 
-Start by creating a Bicep module file named **main.bicep**:
+
+Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
+the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep).
 
 ```bicep
 targetScope='subscription'
@@ -44,40 +46,37 @@ resource testrg2 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   location: resourceGroupLocation
 }
 
-module firstPIP './pip1.bicep' = if (resourceGroupName1 == 'test-rg1') {
+module firstPIP './pip.bicep' = if (resourceGroupName1 == 'test-rg1') {
   name: 'publicIP1'
   scope: testrg1
   params: {
-    pubIPName: 'publicIP1'
     location: resourceGroupLocation
     allocationMethod: 'Dynamic'
     skuName: 'Basic'
   }
 }
 
-module secondPIP './pip1.bicep' = if (resourceGroupName2 == 'test-rg2') {
+module secondPIP './pip.bicep' = if (resourceGroupName2 == 'test-rg2') {
   name: 'publicIP2'
   scope: testrg2
   params: {
-    pubIPName: 'publicIP2'
     location: resourceGroupLocation
-    allocationMethod: 'Dynamic'
+    allocationMethod: 'Static'
     skuName: 'Basic'
   }
 }
 ```
 
-Next, create two Bicep scripts to define each public IP address resource. Following is a
-sample script named `pip1.bicep`:
+Next, create another Bicep resource template that defines the two public IP address resources.
+We reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
 
 ```bicep
 param location string = 'eastus'
-param pubIPName string
 param allocationMethod string
 param skuName string
 
-resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name:  pubIPName
+resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (allocationMethod == 'Dynamic') {
+  name:  'pubIP1'
   location: location
   sku: {
     name:  skuName
@@ -87,18 +86,9 @@ resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
     publicIPAllocationMethod: allocationMethod
   }
 }
-```
 
-And here is a sample definition for the second public IP address named `pip2.bicep`:
-
-```bicep
-param location string = 'eastus'
-param pubIPName string
-param allocationMethod string
-param skuName string
-
-resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = {
-  name:  pubIPName
+resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (allocationMethod == 'Static') {
+  name:  'pubIP2'
   location: location
   sku: {
     name:  skuName
@@ -125,17 +115,26 @@ az stack sub create `
   --template-file main.bicep
 ```
 
-Use `az stack sub show` to check deployment status or list your deployment stacks
-defined created in the targeted Azure scope.
+Use `az stack sub list` to check deployment status or list your deployment stacks
+defined created in the designated Azure scope.
 
 ```azurecli
-az stack sub show `
+az stack sub list `
   --name mySubStack
 ```
 
-## List deployment stack resources
+:::image type="content" source="placeholder.png" alt-text="Console window showing az stack sub list output":::
 
-During private preview, Deployment stacks does not have an Azure portal graphical user interface (GUI).
+Let's explain each property in the `az stack sub list` output shown in the preceding screenshot:
+
+- **Name**: blah
+- **State**: blah
+- **Last Modified**: blah
+- **Deployment Id**: blah
+
+## View the managed resources in a deployment stack
+
+During private preview, deployment stacks does not have an Azure portal graphical user interface (GUI).
 To view the managed resources enclosed within a deployment stack, use the following
 Azure PowerShell command:
 
@@ -204,7 +203,7 @@ By default, deployment stacks detach and do not delete resources when they are n
 within the stack's management scope.
 
 To test the default detach capability, remove one of the public IP address definitions in
-your `main.bicep` script.
+your `main.bicep` deployment template.
 
 Next, run ``az stack sub create`` again to update the stack.
 
@@ -221,6 +220,10 @@ and pass one of the following parameters:
 - `--delete-resources`: Flag to indicate delete rather than attach for managed resources only
 - `--delete-resource-groups`: Flag to indicate delete rather than detach for managed resource groups only
 
+> [!NOTE]
+> When you delete resource groups using the previously listed parameters, the resource groups are
+> deleted regardless of whether they're empty.
+
 Update the deployment stack by running the following command:
 
 ```azurecli
@@ -231,7 +234,7 @@ az stack sub create `
   --delete-resources
 ```
 
-If you removed one of the public IP addresses from your Bicep deployment script, then after
+If you removed one of the public IP addresses from your Bicep deployment template, then after
 running the code above you should observe:
 
 - The resource group containing the removed public IP address still exits
@@ -245,7 +248,7 @@ command to delete the entire deployment stack.
 
 > [!NOTE]
 > If you run `az stack sub delete` without the `--delete-all`, `--delete-resource-groups`, or
-`--delete-resources` parameters, the managed resources will be detached (unmanaged), but not deleted.
+`--delete-resources` parameters, the managed resources will be detached but not deleted.
 
 ```azurecli
 az stack sub delete `
