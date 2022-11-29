@@ -1,40 +1,37 @@
-# What is Deployment Stacks?
+# What are Deployment Stacks?
 
-Many Azure customers find it  difficult to manage the lifecycle of a _collection_ of resources –
-while it’s easy to deploy resources together as a group, after the deployment finishes there is no
-single way to relate those resources together and manage their lifecycle.
+Many Azure administrators find it difficult to manage the lifecycle of their deployments.
+For example, infrastructure deployed in Azure may span across multiple resource groups, subscriptions,
+and even Azure Active Directory (Azure AD) tenants. Deployment stacks simplify lifecycle management of
+your Azure deployments, regardless of how simple or complex they are.
 
-Infrastructure deployed in Azure may span across multiple resource groups, subscriptions and even
-tenants. Deployment stacks will make it easy to manage the lifecycle of a collection resources
-that work together to create a solution.
+A _deployment stack_ is a native Azure resource type that enables you to perform operations on
+a resource collection as an atomic unit. Deployment stacks are defined in ARM
+as the type `Microsoft.Resources/deploymentStacks`.
 
-A _deployment stack_ is a grouping concept that allows for lifecycle operations to be performed on a defined
-collection of Azure resources. While it is very similar to the traditional [Microsoft.Resources/deployments](https://docs.microsoft.com/azure/templates/microsoft.resources/deployments?tabs=json) resource, `Microsoft.Resources/deploymentStacks` is a reusable resource type
-that can help you manage the resources your deployment creates.
+Because the deployment stack is a native Azure resource, you can perform all typical Azure
+Resource Manager (ARM) operations on the resource, including:
 
-Any resource created using a deployment stack is _managed_ by it, and subsequent updates to that
+- Azure role-based access control (RBAC) assignments
+- Security recommendations surfaced by Microsoft Defender for Cloud
+- Azure Policy assignments
+
+Any Azure resource created using a deployment stack is managed by it, and subsequent updates to that
 deployment stack, combined with value of the newest iteration's `UpdateBehavior` property, allows you to control
 the lifecycle of the resources managed by the deployment stack. When a deployment stack is updated,
 the new set of managed resources will be determined by the resources defined in the template.
 
-> [!NOTE]
-> To practice using deployment stacks, work through our [quickstart tutorial](./TUTORIAL.md).
+To create your first deployment stack, work through our [quickstart tutorial](./TUTORIAL.md).
 
 > [!IMPORTANT]
 > Deployment stacks is currently in private preview. Thus, please treat this information as confidential and do not share publicly.
 
 ## Feature registration
 
-Use the following PowerShell command to enable deployment stacks in your Azure subscription:
+Use the following PowerShell command to enable the deployment stacks preview feature in your Azure subscription:
 
 ```powershell
 Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deployment stacksPreview
-```
-
-The feature takes a few minutes to register; you can check on the status by running the following command:
-
-```powershell
-Get-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deployment stacksPreview
 ```
 
 ## Deployment stacks tools installation (PowerShell)
@@ -105,7 +102,7 @@ Use the following steps to install the Deployment Stacks Command-Line Interface 
 Both deployment stacks and its snapshots contain some diagnostic information that is not displayed by
 default. When troubleshooting problems with an update, save the objects to analyze them further:
 
-```powershell
+```azurepowershell
 $stack =  Get-AzSubscriptionDeploymentStack -Name 'mySubStack'
 ```
 
@@ -119,7 +116,7 @@ If a deployment was created and the failure occurred during deployment, you can 
 the deployment using the deployment commands.  For example if your template was deployed
 to a resource group:
 
-```PowerShell
+```azurepowershell
 Get-AzResourceGroupDeployment -Id $stack.DeploymentId
 ```
 
@@ -127,7 +124,7 @@ You can get more information from the [deployment operations](https://docs.micro
 
 If the failure occurred as part of the deployment stack operations, more details about the failure can be found on the snapshot:
 
-```powershell
+```azurepowershell
 Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $stack.SnapshotId
 ```
 
