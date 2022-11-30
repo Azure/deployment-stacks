@@ -14,23 +14,20 @@ module template and associated Bicep resource template.
 
 For more information about deployment stacks, see the [readme](./README.md).
 
-In this tutorial you'll use the Deployment Stacks Command-Line Interface (CLI)
+In this tutorial you'll use the Azure Command-Line Interface (CLI)
 and Azure PowerShell to create, modify, and delete a new deployment stack.
 
 ## Install the tooling
 
-To install the Deployment Stacks CLI and Deployment Stacks Azure PowerShell
+To install the Azure CLI and Deployment Stacks Azure PowerShell
 module, check the [readme](./README.md).
 
 ## Set up your ARM deployment template
 
-We begin with an Azure deployment authored with Bicep templates that creates two resource groups with one
-public IP address within each resource group. If you use the the module template's parameter defaults,
-then your resulting **mySubStack** deployment stack will look like this:
-
-By deploying this Bicep template with parameter default values, you'll create two resource groups
-(test-rg1 and test-rg2) with one public IP address resource (publicIP1 and publicIP2, respectively)
-in each respective group.
+We begin with an Azure deployment authored with Bicep templates that creates two resource groups
+with one public IP address within each resource group. By deploying this Bicep template with
+parameter default values, you'll create two resource groups (test-rg1 and test-rg2) with one public
+IP address resource (publicIP1 and publicIP2, respectively) in each respective group.
 
 
 Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
@@ -41,7 +38,7 @@ targetScope='subscription'
 
 param resourceGroupName1 string = 'test-rg1'
 param resourceGroupName2 string = 'test-rg2'
-param resourceGroupLocation string = 'eastus'
+param resourceGroupLocation string = deployment().location
 
 resource testrg1 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   name: resourceGroupName1
@@ -117,17 +114,19 @@ resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
 Use `az stack sub create` to create a deployment stack by using Azure CLI.
 
 ```azurecli
-az stack sub create `
-  --name mySubStack `
-  --location eastus `
+az stack sub create \
+  --name mySubStack \
+  --location eastus \
   --template-file main.bicep
 ```
 
 Use `New-AzSubscriptionDeploymentStack` to create a deployment stack by using Azure PowerShell.
 
 ```powershell
-New-AzSubscriptionDeploymentStack -Name 'mySubStack' -TemplateFile './main.bicep' `
--Location 'eastus' -DeploymentScope 'subscription'
+New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+   -DeploymentScope 'subscription' `
+   -Location 'eastus' `
+   -TemplateFile './main.bicep'
 ```
 
 With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
@@ -139,36 +138,28 @@ az stack sub list
 C:\> az stack sub list
 Name          State      Last Modified     Deployment Id
 ------------  ---------  ---------------   -------------
-mySubStack    succeeded  2022-11-29T14..  /subscriptions/fc../providers/Microsoft.Resources/deployments/mySubStack-2022-11-29..
+mySubStack    succeeded  2022-11-29T14..   /subscriptions/fc../providers/Microsoft.Resources/deployments/mySubStack-2022-11-29..
 ```
 
 The analogous Azure PowerShell command to list deployment stack resources is `Get-AzSubscriptionDeploymentStack`:
 
-```azurepowershell
+```powershell
 C:\> Get-AzSubscriptionDeploymentStack
 
-Id                : /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/providers/Microsoft.Resources/deploymentStacks/mySubStack
+Id                : /subscriptions/fc8d../providers/Microsoft.Resources/deploymentStacks/mySubStack
 Name              : mySubStack
 ProvisioningState : succeeded
 UpdateBehavior    : detachResources
 Location          : eastus
 CreationTime(UTC) : Tue, 11, 29, 2022 2:58:30 PM
-ManagedResources  : /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/resourceGroups/test-rg1
-                    /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/resourceGroups/test-rg1/providers/Microsoft.Network/publicIPAddresses/pub
-                    IP1
-                    /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/resourceGroups/test-rg2
-                    /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pub
-                    IP2
-DeploymentId      : /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/providers/Microsoft.Resources/deployments/mySubStack-2022-11-29-14-58-34-
+ManagedResources  : /subscriptions/fc8d../resourceGroups/test-rg1
+                    /subscriptions/fc8d../resourceGroups/test-rg1/providers/Microsoft.Network/publicIPAddresses/pubIP1
+                    /subscriptions/fc8d../resourceGroups/test-rg2
+                    /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
+DeploymentId      : /subscriptions/fc8d../providers/Microsoft.Resources/deployments/mySubStack-2022-11-29-14-58-34-
                     99d05
-SnapshotId        : /subscriptions/fc8d795a-57cf-4416-acb5-c4de5461a4bc/providers/Microsoft.Resources/deploymentStacks/mySubStack/snapshots/2022-
-                    11-29-14-58-34-99d05
+SnapshotId        : /subscriptions/fc8d../providers/Microsoft.Resources/deploymentStacks/mySubStack/snapshots/2022-11-29-14-58-34-99d05
 ```
-
-> [!NOTE]
-> If you want to define your deployment stack at the resource group scope, then run
-> `az stack group -h` in Azure CLI or `Get-Help -Name New-AzResourceGroupDeploymentStack` in Azure
-> PowerShell to get syntax help.
 
 ## View the managed resources in a deployment stack
 
@@ -176,8 +167,8 @@ During private preview, the deployment stack service does not yet have an Azure
 portal graphical user interface (GUI). To view the managed resources enclosed
 within a deployment stack, use the following Azure PowerShell command:
 
-```azurepowershell
-(Get-AzSubscriptionDeploymentStack -Name mySubStack).ManagedResources
+```powershell
+(Get-AzSubscriptionDeploymentStack -Name mySubStack).Resources
 ```
 
 ## Update a deployment stack
@@ -214,7 +205,7 @@ from being deleted by unauthorized security principals (be default, everyone).
 
 Following are the relevant `az stack sub create` parameters:
 
-- `deny-settings-mode`: Defines how resources deployed by the deployment stack are locked. Valid values are <TO DO>
+- `deny-settings-mode`: Defines how resources deployed by the deployment stack are locked
 - `deny-settings-excluded-principals`: Comma-separated list of Azure Active Directory (Azure AD) principal IDs excluded from the lock. Up to five principals are allowed
 - `deny-settings-apply-to-child-scopes`: Deny settings will be applied to child Azure management scopes
 - `deny-settings-excluded-actions`: List of role-based access control (RBAC) management operations excluded from the deny settings. Up to 200 actions are allowed
