@@ -22,7 +22,7 @@ and Azure PowerShell to create, modify, and delete a new deployment stack.
 To install the Azure CLI and Deployment Stacks Azure PowerShell
 module, check the [readme](./README.md).
 
-## Set up your ARM deployment template
+## Set up your deployment template
 
 We begin with an Azure deployment authored with Bicep templates that creates two resource groups
 with one public IP address within each resource group. By deploying this Bicep template with
@@ -106,7 +106,7 @@ resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
 
 > [!NOTE]
 > Bicep files can have any valid file name. **main** is
-> simply a community convention, similar to how **azuredeploy** is used as a
+> a community convention, similar to how **azuredeploy** is used as a
 > conventual Azure Resource Manager (ARM) template file name.
 
 ## Create a deployment stack
@@ -163,7 +163,7 @@ SnapshotId        : /subscriptions/fc8d../providers/Microsoft.Resources/deployme
 
 ## View the managed resources in a deployment stack
 
-During private preview, the deployment stack service does not yet have an Azure
+During private preview, the deployment stack service doesn't yet have an Azure
 portal graphical user interface (GUI). To view the managed resources enclosed
 within a deployment stack, use the following Azure PowerShell command:
 
@@ -201,7 +201,7 @@ address allocation method is now static instead of dynamic.
 ## Protect managed resources against deletion
 
 The `--deny-delete` CLI parameter places a special lock on managed resources that prevents them
-from being deleted by unauthorized security principals (be default, everyone).
+from deletion by unauthorized security principals (be default, everyone).
 
 Following are the relevant `az stack sub create` parameters:
 
@@ -228,12 +228,12 @@ To manage deployment stack locks with Azure PowerShell, include the `-UpdateBeha
 of the `New-AzSubscriptionDeploymentStack` command; the legal
 values are as follows:
 
-- `detachResources`: Upon detach, do not delete the previously managed resources
+- `detachResources`: Upon detach, don't delete the previously managed resources
 - `purgeResources`: Upon detach, delete the previously managed resources
 
 ## Detach a resource
 
-By default, deployment stacks detach and do not delete resources when they are no longer contained
+By default, deployment stacks detach and don't delete resources when they're no longer contained
 within the stack's management scope.
 
 To test the default detach capability, remove one of the public IP address definitions in
@@ -317,13 +317,13 @@ To learn more about deployment stacks, see the [tutorial](./TUTORIAL.md).
 
 ## Contribute
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 
 When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+a CLA and decorate the PR appropriately (for example, status check, comment). Follow the instructions
+provided by the bot. You will only need to do this once across all repositories using our CLA.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
