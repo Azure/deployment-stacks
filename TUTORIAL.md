@@ -30,7 +30,7 @@ parameter default values, you'll create two resource groups (test-rg1 and test-r
 IP address resource (publicIP1 and publicIP2, respectively) in each respective group.
 
 
-Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
+1. Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
 the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep).
 
 ```bicep
@@ -71,7 +71,7 @@ module secondPIP './pip.bicep' = if (resourceGroupName2 == 'test-rg2') {
 }
 ```
 
-Next, create another Bicep resource template that defines the two public IP address resources.
+1. Next, create another Bicep resource template that defines the two public IP address resources.
 We reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
 
 ```bicep
@@ -111,7 +111,9 @@ resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
 
 ## Create a deployment stack
 
-Use `az stack sub create` to create a deployment stack by using Azure CLI.
+sdf
+
+1. Use `az stack sub create` to create a deployment stack by using Azure CLI.
 
 ```azurecli
 az stack sub create \
@@ -129,7 +131,7 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -TemplateFile './main.bicep'
 ```
 
-With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
+2. With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
 resources defined created in the designated Azure scope.
 
 ```azurecli
