@@ -9,8 +9,8 @@ for example:
 - Govern compliance with Azure Policy
 - Surface security recommendations with Microsoft Defender for Cloud
 
-This tutorial walks you through an Azure deployment stack example that uses a Bicep
-module template and associated Bicep resource template.
+This tutorial walks you through an Azure deployment stack example that uses Bicep
+module and resource templates.
 
 For more information about deployment stacks, see the [readme](./README.md).
 
@@ -24,13 +24,12 @@ module, check the [readme](./README.md).
 
 ## Set up your deployment template
 
-We begin with an Azure deployment authored with Bicep templates that creates two resource groups
+We begin with an Azure deployment that uses Bicep templates to create two resource groups
 with one public IP address within each resource group. By deploying this Bicep template with
 parameter default values, you'll create two resource groups (test-rg1 and test-rg2) with one public
 IP address resource (publicIP1 and publicIP2, respectively) in each respective group.
 
-
-1. Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
+Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
 the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep).
 
 ```bicep
@@ -71,8 +70,8 @@ module secondPIP './pip.bicep' = if (resourceGroupName2 == 'test-rg2') {
 }
 ```
 
-1. Next, create another Bicep resource template that defines the two public IP address resources.
-We reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
+Create another Bicep resource template that defines the two public IP address resources.
+We'll reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
 
 ```bicep
 param location string = 'eastus'
@@ -111,9 +110,11 @@ resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
 
 ## Create a deployment stack
 
-sdf
+The value of deploying our new Azure environment as a deployment stack is we can
+manage the deployment centrally, including locking managed resources against modification
+or deletion.
 
-1. Use `az stack sub create` to create a deployment stack by using Azure CLI.
+Use `az stack sub create` to create a deployment stack by using Azure CLI.
 
 ```azurecli
 az stack sub create \
@@ -122,7 +123,7 @@ az stack sub create \
   --template-file main.bicep
 ```
 
-Use `New-AzSubscriptionDeploymentStack` to create a deployment stack by using Azure PowerShell.
+Alternatively, use `New-AzSubscriptionDeploymentStack` to create a deployment stack by using Azure PowerShell.
 
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
@@ -131,7 +132,7 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -TemplateFile './main.bicep'
 ```
 
-2. With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
+With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
 resources defined created in the designated Azure scope.
 
 ```azurecli
@@ -140,10 +141,10 @@ az stack sub list
 C:\> az stack sub list
 Name          State      Last Modified     Deployment Id
 ------------  ---------  ---------------   -------------
-mySubStack    succeeded  2022-11-29T14..   /subscriptions/fc../providers/Microsoft.Resources/deployments/mySubStack-2022-11-29..
+mySubStack    succeeded  2022-11-29T14..   /subscriptions/.../Microsoft.Resources/deployments/mySubStack-2022-11-29...
 ```
 
-The analogous Azure PowerShell command to list deployment stack resources is `Get-AzSubscriptionDeploymentStack`:
+Alternatively, use the `Get-AzSubscriptionDeploymentStack` Azure PowerShell command to list deployment stack resources.
 
 ```powershell
 C:\> Get-AzSubscriptionDeploymentStack
@@ -166,8 +167,8 @@ SnapshotId        : /subscriptions/fc8d../providers/Microsoft.Resources/deployme
 ## View the managed resources in a deployment stack
 
 During private preview, the deployment stack service doesn't yet have an Azure
-portal graphical user interface (GUI). To view the managed resources enclosed
-within a deployment stack, use the following Azure PowerShell command:
+portal graphical user interface (GUI). To view the managed resources inside
+ a deployment stack, use the following Azure PowerShell command:
 
 ```powershell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).Resources
@@ -186,7 +187,7 @@ property to `Static`:
   allocationMethod: 'Static'
 ```
 
-To update the deployment stack's managed resources with Azure CLI,
+To refresh the deployment stack with Azure CLI,
 run `az stack sub create` again and confirm you
 want to overwrite the existing stack definition:
 
@@ -197,13 +198,14 @@ az stack sub create `
   --template-file main.bicep
 ```
 
-Sign into the Azure portal, check the properties of the `publicIP` resource and verify its
-address allocation method is now static instead of dynamic.
+To verify the change, sign into the Azure portal, check the properties of
+the `publicIP` resource and confirm its address allocation method is
+now `Static` instead of `Dynamic`.
 
 ## Protect managed resources against deletion
 
-The `--deny-delete` CLI parameter places a special lock on managed resources that prevents them
-from deletion by unauthorized security principals (be default, everyone).
+The `--deny-delete` CLI parameter places a special type of lock on managed resources
+that prevents them from deletion by unauthorized security principals (be default, everyone).
 
 Following are the relevant `az stack sub create` parameters:
 
@@ -227,8 +229,7 @@ Verify the `denyDelete` lock works as expected by signing into the Azure portal 
 delete `publicIP1` or `publicIP2`. The request should fail.
 
 To manage deployment stack locks with Azure PowerShell, include the `-UpdateBehavior` parameter
-of the `New-AzSubscriptionDeploymentStack` command; the legal
-values are as follows:
+of the `New-AzSubscriptionDeploymentStack` command; the valid values are as follows:
 
 - `detachResources`: Upon detach, don't delete the previously managed resources
 - `purgeResources`: Upon detach, delete the previously managed resources
@@ -276,7 +277,7 @@ To do the same thing with Azure PowerShell, run the following command:
 New-AzSubscriptionDeploymentStack -Name mySubStack `
 -Location eastus
 -TemplateFile ./main.bicep `
--UpdateBehavior purgeResources
+-UpdateBehavior DeleteResources
 ```
 
 If you removed one of the public IP addresses from your Bicep deployment template, then after
@@ -286,10 +287,19 @@ running the code above you should observe:
 - The removed public IP address is deleted
 - The other resource group and public IP address still exist
 
+## Add a managed resource to the deployment stack
+
+Modify `pip.bicep` to re-add the IP address you deleted in the previous step.
+Make sure to run `az stack sub create` or `New-AzSubscriptionDeploymentStack` to
+confirm the change.
+
+This step highlights the modularity and centralized "command and control" offered
+by Azure deployment stacks. You control your list of managed resources entirely
+through the infrastructure as code (IaC) design pattern.
+
 ## Delete the deployment stack
 
-To remove the deployment stack and its managed resources from your Azure subscription, run the following CLI
-command to delete the entire deployment stack.
+To remove the deployment stack and its managed resources from your Azure subscription, run the following CLI command:
 
 > [!NOTE]
 > If you run `az stack sub delete` without the `--delete-all`, `--delete-resource-groups`, or
@@ -310,12 +320,8 @@ Here's how to do the same thing with Azure PowerShell using the `Remove-AzSubscr
 
 ```azurepowershell
 Remove-AzSubscriptionDeploymentStack `
--ResourceId <insert> `
+-DeleteAll
 ```
-
-## Next steps
-
-To learn more about deployment stacks, see the [tutorial](./TUTORIAL.md).
 
 ## Contribute
 
