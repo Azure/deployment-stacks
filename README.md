@@ -1,9 +1,13 @@
-# What are Deployment Stacks?
+# What are deployment stacks?
+
+> [!IMPORTANT]
+> Deployment stacks is currently in private preview. Thus, please treat this information as confidential and do not share publicly.
 
 Many Azure administrators find it difficult to manage the lifecycle of their deployments.
-For example, infrastructure deployed in Azure may span across multiple resource groups, subscriptions,
+For example, infrastructure deployed in Azure may span across multiple
+management groups, subscriptions, resource groups,
 and even Azure Active Directory (Azure AD) tenants. Deployment stacks simplify lifecycle management of
-your Azure deployments, regardless of how simple or complex they are.
+your Azure deployments, regardless of how complex they are.
 
 A _deployment stack_ is a native Azure resource type that enables you to perform operations on
 a resource collection as an atomic unit. Deployment stacks are defined in ARM
@@ -17,14 +21,11 @@ Resource Manager (ARM) operations on the resource, including:
 - Azure Policy assignments
 
 Any Azure resource created using a deployment stack is managed by it, and subsequent updates to that
-deployment stack, combined with value of the newest iteration's `UpdateBehavior` property, allows you to control
+deployment stack, combined with value of the newest iteration's `actionOnUnmanage` property, allows you to control
 the lifecycle of the resources managed by the deployment stack. When a deployment stack is updated,
 the new set of managed resources will be determined by the resources defined in the template.
 
 To create your first deployment stack, work through our [quickstart tutorial](./TUTORIAL.md).
-
-> [!IMPORTANT]
-> Deployment stacks is currently in private preview. Thus, please treat this information as confidential and do not share publicly.
 
 ## Feature registration
 
@@ -56,7 +57,9 @@ Set-ExecutionPolicy Bypass -Scope Process
 
   To uninstall the module, run the same `.ps1` file and choose the `Uninstall module (previous system-wide installs)` option.
 
-1. Set the current subscription context to an Azure subscription onboarded for the deployment stacks private preview:
+1. Set the current subscription context to your preferred Azure subscription. As long
+as the deployment stacks feature has been enabled in your Azure AD tenant, the feature is
+available for all subscriptions.
 
 ```powershell
 Connect-AzAccount
@@ -66,7 +69,7 @@ Set-AzContext -SubscriptionId '<subscription-id>'
 1. Verify the deployment stacks PowerShell commands are available in your PowerShell session by running the following command:
 
 ```powershell
-Get-Command -Module Az.Resources -Noun Az*Stack*
+Get-Command -Name *DeploymentStack*
 ```
 
 ## Deployment stacks tools installation (Azure CLI)
@@ -99,7 +102,7 @@ Use the following steps to install the Deployment Stacks Command-Line Interface 
 
 ## Troubleshooting
 
-Both deployment stacks and its snapshots contain some diagnostic information that is not displayed by
+Deployment stacks contain some diagnostic information that isn't displayed by
 default. When troubleshooting problems with an update, save the objects to analyze them further:
 
 ```azurepowershell
@@ -122,26 +125,25 @@ Get-AzResourceGroupDeployment -Id $stack.DeploymentId
 
 You can get more information from the [deployment operations](https://docs.microsoft.com/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) as needed.
 
-If the failure occurred as part of the deployment stack operations, more details about the failure can be found on the snapshot:
-
-```azurepowershell
-Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $stack.SnapshotId
-```
-
-Information about resources that failed to purge can be found in the failedResources array on the snapshot.
-
 ## Known issues
 
-The `2021-05-01-preview` private preview API version has the following limitations:
+The `2022-08-01-preview` private preview API version has the following limitations:
 
-- We don't recommended using deployment stacks in production environments because the service is still in private preview. Therefore you should expect breaking changes in future private preview releases.
-- Resource locking for deployment stack managed resources is not available in the private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
-- `Whatif` is not available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM.
-- A deployment stack currently does not manage resourceGroups, subscriptionAliases, or managementGroups that are created by the stack.
-- Deployment stacks are currently limited to resource group or subscription scope for the private preview.
-- A deployment stack does not guarantee the protection of `secureString` and `secureObject` parameters; this release returns them in plain text when requested.
-- You cannot currently create deployment stacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). However, you can use the `bicep build` command to author the template file for a deployment stack update.
-- In private preview, deleting a deployment stack detaches all of its managed resources. To delete all the managed resources, specify one of the following parameters when you update the deployment stack with CLI: `--delete-all`, `--delete-resources`, `--delete-resource-groups`.
+- We don't recommended using deployment stacks in production environments because the service is still in preview. Therefore, you should expect breaking changes in future releases.
+
+- Resource group delete currently bypasses deny assignments.
+
+- Implicitly created resources aren't managed by the stack (therefore, no deny assignments or cleanup is possible)
+
+- Resource locking for deployment stack managed resources isn't available in private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
+
+- `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM.
+
+- Deployment stacks are currently limited to the resource group and subscription management scopes for the private preview.
+
+- A deployment stack doesn't guarantee the protection of `secureString` and `secureObject` parameters; this release returns them in plain text when requested.
+
+- You can't currently create deployment stacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). However, you can use the `bicep build` command to author the template file for a deployment stack update.
 
 ## Contributing
 
