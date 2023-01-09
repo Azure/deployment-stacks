@@ -1,6 +1,6 @@
-# Deployment Stacks release notes
+# Deployment stacks release notes
 
-## [Deployment Stacks Private Preview - Client Packages (v0.1.5)](https://github.com/Azure/deployment-stacks/releases/tag/v0.1.5) (2022-07-21)
+## [Deployment Stacks Private Preview - Client Packages (v0.1.6)](https://github.com/Azure/deployment-stacks/releases/tag/v0.1.5) (2022-07-21)
 
 > Includes updates/fixes to the client-side modules for Deployment Stacks Private Preview.
 > Individuals/organizations with Azure subscriptions onboarded for the Private Preview can
@@ -12,7 +12,8 @@
 
 ### Breaking changes
 
-- <TODO>-
+- Removed snapshots
+- Changed Azure PowerShell and Azure CLI command names
 
 ### New features
 
