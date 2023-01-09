@@ -1,13 +1,17 @@
 # What are deployment stacks?
 
 > [!IMPORTANT]
-> Deployment stacks is currently in private preview. Thus, please treat this information as confidential and do not share publicly.
+> Deployment stacks is currently in private preview. Thus, please treat this
+> information as confidential and do not share publicly.
+>
+> Also, private preview features aren't covered by Azure Customer Services & Support (CSS)
+> Instead, please file an [issue](https://github.com/Azure/deployment-stacks/issues) so
+> we can address your question or concern. Thanks!
 
 Many Azure administrators find it difficult to manage the lifecycle of their deployments.
-For example, infrastructure deployed in Azure may span across multiple
+For example, infrastructure deployed in Azure may span multiple
 management groups, subscriptions, resource groups,
-and even Azure Active Directory (Azure AD) tenants. Deployment stacks simplify lifecycle management of
-your Azure deployments, regardless of how complex they are.
+and even Azure Active Directory (Azure AD) tenants. Deployment stacks simplify lifecycle management for your Azure deployments, regardless of their complexity.
 
 A _deployment stack_ is a native Azure resource type that enables you to perform operations on
 a resource collection as an atomic unit. Deployment stacks are defined in ARM
@@ -86,6 +90,13 @@ Use the following steps to install the Deployment Stacks Command-Line Interface 
 
 ```bash
  & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\python.exe" -m pip install -e <path-to-unzipped-sdk-folder> --force-reinstall
+```
+
+1. Run the following commands to update PowerShell help and verify it's working:
+
+```powershell
+Update-Help -Force -ErrorAction SilentlyContinue
+Get-Help -Name New-AzSubscriptionDeploymentStack
 ```
 
 1. Verify you have the Deployment Stacks CLI installed by running the following command (if you get Deployment Stacks output, you know it's installed correctly):
