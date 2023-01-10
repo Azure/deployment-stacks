@@ -13,6 +13,7 @@
 
 ### New features
 
+- Significant improvements to the deployment stacks Azure PowerShell and Azure CLI commands
 - Bulk delete
 - Export stack template (before you needed to use the GetStack API directly)
 - Deny assignments (`DenyWriteDelete` is still in progress)
