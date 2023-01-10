@@ -74,7 +74,7 @@ Create another Bicep resource template that defines the two public IP address re
 We'll reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
 
 ```bicep
-param location string = 'eastus'
+param location string = resourceGroup().location
 param allocationMethod string
 param skuName string
 
@@ -82,11 +82,11 @@ resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
   name:  'pubIP1'
   location: location
   sku: {
-    name:  skuName
+    name:  'Basic'
     tier:  'Regional'
   }
   properties: {
-    publicIPAllocationMethod: allocationMethod
+    publicIPAllocationMethod: 'Dynamic'
   }
 }
 
@@ -228,11 +228,11 @@ az stack sub create `
 Verify the `denyDelete` lock works as expected by signing into the Azure portal and attempting to
 delete `publicIP1` or `publicIP2`. The request should fail.
 
-To manage deployment stack locks with Azure PowerShell, include the `-UpdateBehavior` parameter
-of the `New-AzSubscriptionDeploymentStack` command; the valid values are as follows:
+To manage deployment stack locks with Azure PowerShell, include one of the following
+switch parameters of the `New-AzSubscriptionDeploymentStack` command:
 
-- `detachResources`: Upon detach, don't delete the previously managed resources
-- `purgeResources`: Upon detach, delete the previously managed resources
+- `delete-all`: Upon detach, don't delete the previously managed resources
+- `delete-resource-`: Upon detach, delete the previously managed resources
 
 ## Detach a resource
 
