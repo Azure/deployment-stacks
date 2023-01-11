@@ -8,10 +8,9 @@
 > Instead, please file an [issue](https://github.com/Azure/deployment-stacks/issues) so
 > we can address your question or concern. Thanks!
 
-Many Azure administrators find it difficult to manage the lifecycle of their deployments.
+Many Azure administrators find it difficult to manage the lifecycle of their cloud infrastructure.
 For example, infrastructure deployed in Azure may span multiple
-management groups, subscriptions, resource groups,
-and even Azure Active Directory (Azure AD) tenants. Deployment stacks simplify lifecycle management for your Azure deployments, regardless of their complexity.
+management groups, subscriptions, and resource groups. Deployment stacks simplify lifecycle management for your Azure deployments, regardless of their complexity.
 
 A _deployment stack_ is a native Azure resource type that enables you to perform operations on
 a resource collection as an atomic unit. Deployment stacks are defined in ARM
