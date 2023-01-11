@@ -1,6 +1,6 @@
 # Deployment stacks release notes
 
-## [Deployment Stacks Private Preview - Client Packages v0.1.6 (January 9, 2023)
+## [Deployment Stacks Private Preview - Client Packages v0.1.7 (January 11, 2023)
 
 > Includes updates/fixes to the client-side modules for Deployment Stacks Private Preview.
 > Individuals or organizations with Azure subscriptions onboarded for the Private Preview can
