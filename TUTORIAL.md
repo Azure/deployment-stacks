@@ -33,7 +33,7 @@ Start by creating a Bicep module template named **main.bicep** using [Visual Stu
 the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep).
 
 ```bicep
-targetScope='subscription'
+targetScope = 'subscription'
 
 param resourceGroupName1 string = 'test-rg1'
 param resourceGroupName2 string = 'test-rg2'
@@ -228,11 +228,19 @@ az stack sub create `
 Verify the `denyDelete` lock works as expected by signing into the Azure portal and attempting to
 delete `publicIP1` or `publicIP2`. The request should fail.
 
-To manage deployment stack locks with Azure PowerShell, include one of the following
-switch parameters of the `New-AzSubscriptionDeploymentStack` command:
+To manage deployment stack deny assignments with Azure PowerShell, include one of the following `-DenySettingsMode` parameters of the `New-AzSubscriptionDeploymentStack` command:
 
-- `delete-all`: Upon detach, don't delete the previously managed resources
-- `delete-resource-`: Upon detach, delete the previously managed resources
+- `None`: Do not apply a lock to managed resources
+- `DenyDelete`: Prevent delete operations
+- `DenyWriteAndDelete`: Prevent deletion or modification
+
+For example:
+
+```powershell
+New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+  -TemplateFile './main.bicep' `
+  -DenySettingsMode 'DenyDelete'
+```
 
 ## Detach a resource
 
@@ -247,6 +255,22 @@ Next, run `az stack sub create` or `New-AzSubscriptionDeploymentStack` again to 
 After the deployment succeeds, you should still see the detached storage account in your
 subscription. When you list the stack's managed resources, you should _not_ see the public IP
 address you detached.
+
+With Azure PowerShell, you specify what you want to happen after detaching a managed
+resource by using one of the following switch parameters of the `New-AzSubscriptionDeploymentStack` command:
+
+- `-DeleteAll`:
+- `-DeleteResources`:
+- `-DeleteResourceGroups`:
+-
+For example:
+
+```powershell
+New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+  -TemplateFile './main.bicep' `
+  -DenySettingsMode 'DenyDelete'
+  -DeleteAll
+```
 
 ## Delete a managed resource
 
