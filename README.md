@@ -38,7 +38,7 @@ Use the following PowerShell command to enable the deployment stacks preview fea
 Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
 ```
 
-## Deployment stacks tools installation (PowerShell)
+## Deployment stacks tools installation (PowerShell on Windows, macOS, and Linux)
 
 Use the following steps to install the deployment stacks PowerShell cmdlets:
 
@@ -46,13 +46,13 @@ Use the following steps to install the deployment stacks PowerShell cmdlets:
 
 1. Open an elevated PowerShell session.
 
-1. Run the following command bypass local script signing policy temporarily.
+1. Run the following command to bypass local script signing policy in your session.
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process
 ```
 
-1. Download the [deployment stacks installation package](https://github.com/Azure/deployment-stacks/releases), unzip the package, and then run the installation `.ps1` script. You can choose to install the module either in the current PowerShell session, or system-wide.
+1. Download the latest [deployment stacks installation package](https://github.com/Azure/deployment-stacks/releases), unzip the package, and then run the installation `.ps1` script. You can choose to install the module either in the current PowerShell session or system-wide.
 
 ```powershell
     ./AzDeploymentStacksPrivatePreview.ps1
@@ -75,9 +75,9 @@ Set-AzContext -SubscriptionId '<subscription-id>'
 Get-Command -Name *DeploymentStack*
 ```
 
-## Deployment stacks tools installation (Azure CLI)
+## Deployment stacks tools installation (Azure CLI on Windows)
 
-Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your machine:
+Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your Windows machine:
 
 1. Install _Microsoft Azure CLI.msi_ from the _msi_ folder
 
@@ -104,10 +104,34 @@ Get-Help -Name New-AzSubscriptionDeploymentStack
   az stack --help
 ```
 
-6. Switch your Azure CLI context to the appropriate Azure subscription and give the new Deployment Stacks CLI a try!
+1. Switch your Azure CLI context to the appropriate Azure subscription and give the new Deployment Stacks CLI a try!
 
 ```azurecli
  az account set --subscription <subscription-id>
+```
+
+## Deployment stacks tools installation (Azure CLI on macOS)
+
+Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your macOS computer:
+
+1. Ensure you have Python and pip installed on your Mac. If not, install Homebrew and run the following `brew` commands to install the dependencies:
+
+```bash
+brew install python
+brew install pip
+```
+
+> [!TIP]
+> If the Python and pip install doesn't work for you, try using `python3` and `pip3` in your `brew` commands.
+
+1. Open Terminal and change directory to `Stacks_CLI_Mac_1.8/pypi`.
+
+1. Run the following sequence of `pip` commands in an administrative (sudo) context:
+
+```bash
+pip install azure_cli_core-2.44.1.post20230111200937-py3-none-any.whl
+pip install azure_cli-2.44.1.post20230111200937-py3-none-any.whl
+pip install azure-mgmt-resource-21.2.0
 ```
 
 ## Troubleshooting
