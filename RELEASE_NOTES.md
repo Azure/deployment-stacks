@@ -1,10 +1,10 @@
 # Deployment stacks release notes
 
-## [Deployment Stacks Private Preview - Client Packages v0.1.7 (January 11, 2023)
+## [Deployment Stacks Private Preview - Client Packages v0.1.8 (January 13, 2023)
 
 > Includes updates/fixes to the client-side modules for Deployment Stacks Private Preview.
 > Individuals or organizations with Azure subscriptions onboarded for the Private Preview can
-> download/extract this release and follow the installation instructions in the [README](./README.md).
+> download/extract this release and follow the installation instructions contained in the [README](./README.md).
 
 ### Breaking changes
 
@@ -17,7 +17,7 @@
 - Bulk delete
 - Export stack template (before you needed to use the GetStack API directly)
 - Deny assignments (`DenyWriteDelete` is still in progress)
-- Management group support
+- Deployment stacks can now be scoped at the management group scope
 - New `-UpdateBehavior` and `-ActionOnUnmanage` parameter values
 
 ### Limitations
