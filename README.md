@@ -35,7 +35,7 @@ To create your first deployment stack, work through our [quickstart tutorial](./
 Use the following PowerShell command to enable the deployment stacks preview feature in your Azure subscription:
 
 ```powershell
-Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deployment stacksPreview
+Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
 ```
 
 ## Deployment stacks tools installation (PowerShell)
@@ -145,15 +145,13 @@ The `2022-08-01-preview` private preview API version has the following limitatio
 
 - Implicitly created resources aren't managed by the stack (therefore, no deny assignments or cleanup is possible)
 
-- Resource locking for deployment stack managed resources isn't available in private preview. In the future, locking will allow you to prevent changes or deletion to any managed resource.
+- The `denyDelete` resource locking method is available in private preview. The `denyWriteAndDelete` method will be available in the future.
 
 - `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM.
 
-- Deployment stacks are currently limited to the resource group and subscription management scopes for the private preview.
+- Deployment stacks are currently limited to the resource group and subscription management scopes for the private preview. At this time management group-scoped Azure PowerShell and Azure CLI commands exist; they just aren't usable yet.
 
 - A deployment stack doesn't guarantee the protection of `secureString` and `secureObject` parameters; this release returns them in plain text when requested.
-
-- You can't currently create deployment stacks using [Bicep](https://docs.microsoft.com/azure/azure-resource-manager/bicep/overview). However, you can use the `bicep build` command to author the template file for a deployment stack update.
 
 ## Contributing
 
