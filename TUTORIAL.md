@@ -149,19 +149,17 @@ Alternatively, use the `Get-AzSubscriptionDeploymentStack` Azure PowerShell comm
 ```powershell
 C:\> Get-AzSubscriptionDeploymentStack
 
-Id                : /subscriptions/fc8d../providers/Microsoft.Resources/deploymentStacks/mySubStack
-Name              : mySubStack
-ProvisioningState : succeeded
-UpdateBehavior    : detachResources
-Location          : eastus
-CreationTime(UTC) : Tue, 11, 29, 2022 2:58:30 PM
-ManagedResources  : /subscriptions/fc8d../resourceGroups/test-rg1
-                    /subscriptions/fc8d../resourceGroups/test-rg1/providers/Microsoft.Network/publicIPAddresses/pubIP1
-                    /subscriptions/fc8d../resourceGroups/test-rg2
-                    /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
-DeploymentId      : /subscriptions/fc8d../providers/Microsoft.Resources/deployments/mySubStack-2022-11-29-14-58-34-
-                    99d05
-SnapshotId        : /subscriptions/fc8d../providers/Microsoft.Resources/deploymentStacks/mySubStack/snapshots/2022-11-29-14-58-34-99d05
+Id                         : /subscriptions/fc8d../providers/Microsoft.Resources/deploymentStacks/mySubStack
+Name                       : mySubStack
+ProvisioningState          : succeeded
+ResourceCleanupAction      : delete
+ResourceGroupCleanupAction : delete
+Location                   : eastus
+CreationTime(UTC)          : Tue, 11, 29, 2022 2:58:30 PM
+ManagedResources           : /subscriptions/fc8d../resourceGroups/test-rg1
+                             /subscriptions/fc8d../resourceGroups/test-rg1/providers/Microsoft.Network/publicIPAddresses/pubIP1
+                             /subscriptions/fc8d../resourceGroups/test-rg2
+                             /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
 ```
 
 ## View the managed resources in a deployment stack
@@ -301,7 +299,7 @@ To do the same thing with Azure PowerShell, run the following command:
 New-AzSubscriptionDeploymentStack -Name mySubStack `
 -Location eastus
 -TemplateFile ./main.bicep `
--UpdateBehavior DeleteResources
+-DeleteResources
 ```
 
 If you removed one of the public IP addresses from your Bicep deployment template, then after
