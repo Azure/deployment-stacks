@@ -1,6 +1,6 @@
 # What are deployment stacks?
 
-> IMPORTANT
+> IMPORTANT: 
 > Deployment stacks is currently in _private preview_. Thus, please treat this
 > information as confidential and don't share publicly.
 > Also, private preview features aren't covered by Azure Customer Services & Support (CSS)
