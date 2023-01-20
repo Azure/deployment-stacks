@@ -106,7 +106,7 @@ resource publicIP2 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (alloca
 > [!NOTE]
 > Bicep files can have any valid file name. **main** is
 > a community convention, similar to how **azuredeploy** is used as a
-> conventual Azure Resource Manager (ARM) template file name.
+> conventional Azure Resource Manager (ARM) template file name.
 
 ## Create a deployment stack
 
@@ -127,7 +127,6 @@ Alternatively, use `New-AzSubscriptionDeploymentStack` to create a deployment st
 
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
-   -DeploymentScope 'subscription' `
    -Location 'eastus' `
    -TemplateFile './main.bicep'
 ```
