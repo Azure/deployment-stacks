@@ -130,7 +130,7 @@ brew install pip
 ```bash
 pip install azure_cli_core-2.44.1.post20230111200937-py3-none-any.whl
 pip install azure_cli-2.44.1.post20230111200937-py3-none-any.whl
-pip install azure-mgmt-resource-21.2.0
+pip install -e ../azure-mgmt-resource-21.2.0
 ```
 
 ## Troubleshooting
