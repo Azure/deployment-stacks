@@ -245,6 +245,13 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
   -DenySettingsMode 'DenyDelete'
 ```
 
+The Azure PowerShell interface also includes these parameters to custom the deny assignment:
+
+- `-DenySettingsExcludedPrincipals`
+- `-DenySettingsApplyToChildScopes`
+- `-DenySettingsExcludedActions`
+- `-DenySettingsExcludedDataActions`
+
 ## Detach a resource
 
 By default, deployment stacks detach and don't delete resources when they're no longer contained
@@ -299,7 +306,7 @@ and pass one of the following parameters:
 - `--delete-resources`: Flag to indicate delete rather than attach for managed resources only
 - `--delete-resource-groups`: Flag to indicate delete rather than detach for managed resource groups only
 
-> [!NOTE]
+> NOTE:
 > When you delete resource groups using the previously listed parameters, the resource groups are
 > deleted regardless of whether they're empty.
 
@@ -323,7 +330,7 @@ New-AzSubscriptionDeploymentStack -Name mySubStack `
 ```
 
 If you removed one of the public IP addresses from your Bicep deployment template, then after
-running the code above you should observe:
+running the previous code you should observe:
 
 - The resource group containing the removed public IP address still exits
 - The removed public IP address is deleted
@@ -343,7 +350,7 @@ through the infrastructure as code (IaC) design pattern.
 
 To remove the deployment stack and its managed resources from your Azure subscription, run the following CLI command:
 
-> [!NOTE]
+> NOTE:
 > If you run `az stack sub delete` without the `--delete-all`, `--delete-resource-groups`, or
 `--delete-resources` parameters, the managed resources will be detached but not deleted.
 
@@ -353,7 +360,7 @@ az stack sub delete `
   --delete-all
 ```
 
-Run `az stack sub list` to verify the deployment stack resource is deleted.
+Run `az stack sub list` to verify Azure deleted the deployment stack resource.
 
 You should also note in the Azure portal the resource groups and remaining
 public IP address have been deleted.
