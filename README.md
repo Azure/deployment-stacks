@@ -90,13 +90,6 @@ Use the following steps to install the Deployment Stacks Command-Line Interface 
  & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\python.exe" -m pip install -e <path-to-unzipped-sdk-folder> --force-reinstall
 ```
 
-1. Run the following commands to update PowerShell help and verify it's working:
-
-```powershell
-Update-Help -Force -ErrorAction SilentlyContinue
-Get-Help -Name New-AzSubscriptionDeploymentStack
-```
-
 1. Verify you have the Deployment Stacks CLI installed by running the following command (if you get Deployment Stacks output, you know it's installed correctly):
 
 ```azurecli
