@@ -116,7 +116,7 @@ The value of deploying our new Azure environment as a deployment stack is we can
 manage the deployment centrally, including locking managed resources against modification
 or deletion.
 
-Use `az stack sub create` to create a deployment stack by using Azure CLI.
+Use `az stack sub create` to create a deployment stack by using Azure CLI that targets the subscription scope.
 
 ```azurecli
 az stack sub create \
@@ -132,6 +132,8 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -Location 'eastus' `
    -TemplateFile './main.bicep'
 ```
+
+> NOTE: You can create a deployment stack at the Azure management group, subscription, or resource group management scopes. For example, use `az stack group create` or `New-AzResourceGroupDeploymentStack` to create a deployment stack at the resource group scope. Likewise, use `az stack mg create` or `New-AzManagementGroupDeploymentStack` to create a deployment stack at the management group scope.
 
 With Azure CLI, use `az stack sub list` to check deployment status or list your deployment stack
 resources defined created in the designated Azure scope.
@@ -245,7 +247,7 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
   -DenySettingsMode 'DenyDelete'
 ```
 
-The Azure PowerShell interface also includes these parameters to custom the deny assignment:
+The Azure PowerShell interface also includes these parameters to customize the deny assignment:
 
 - `-DenySettingsExcludedPrincipals`
 - `-DenySettingsApplyToChildScopes`
@@ -281,7 +283,7 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
   -DeleteAll
 ```
 
-In Azure CLI, you specify what you want to happen after detaching a managed resource by using one of the following parameters of the `az stack sub create` command:
+In Azure CLI, unmanaged resources are detached by default. If you'd like to delete rather than detach, you can specify by using one of the following parameters of the `az stack sub create` command:
 
 - --delete-all
 - --delete-resources
