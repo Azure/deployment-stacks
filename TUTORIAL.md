@@ -165,6 +165,53 @@ ManagedResources           : /subscriptions/fc8d../resourceGroups/test-rg1
                              /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
 ```
 
+## Create a deployment stack with deployment at a lower scope
+
+Both powershell and CLI give you the ability to set a scope below the stack's scope where you would like the deployment to be created. This can be done for both management group and subscription scoped stacks.
+
+For management group scoped stack New/Set commands, this is required. Because we do not currently support having the underlying deployment of a management group scoped stack exist at the management group scope, you are required to pass in a subscription id for the subscription where you would like the deployment to exist.
+
+CLI Parameter: `deployment-subscription-id`  
+powershell Parameter: `DeploymentSubscriptionId`
+
+```azurecli
+az stack mg create `
+  --name myMGStack `
+  --location eastus `
+  --template-file main.bicep
+  --management-group-id myMGId
+  --deployment-subscription-id mySubId
+```
+
+```powershell
+New-AzManagmentGroupDeploymentStack -Name 'myMGStack' `
+   -Location 'eastus' `
+   -TemplateFile './main.bicep'
+   -ManagementGroupId 'myMGId'
+   -DeploymentSubscriptionId 'mySubId'
+```
+
+For subscription scoped stack New/Set commands, you may specify a resource group name for a resource group that you would like your underlying deployment to be deployed into, but it is not required. These commands will default to deploying the underlying stack deployment at the same subscription scope as the stack if no resource group name is provided.
+
+CLI Parameter: `deployment-resource-group-name`  
+powershell Parameter: `DeploymentResourceGroupName`
+
+```azurecli
+az stack sub create `
+  --name mySubStack `
+  --location eastus `
+  --template-file main.bicep
+  --deployment-resource-group-name myRG
+```
+
+```powershell
+New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+   -Location 'eastus' `
+   -TemplateFile './main.bicep'
+   -DeploymentResourceGroupName 'myRG'
+```
+
+
 ## View the managed resources in a deployment stack
 
 During private preview, the deployment stack service doesn't yet have an Azure
