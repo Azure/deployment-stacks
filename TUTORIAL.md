@@ -321,7 +321,7 @@ resource by using one of the following switch parameters of the `New-AzSubscript
 - `-DeleteAll`
 - `-DeleteResources`
 - `-DeleteResourceGroups`
--
+
 For example:
 
 ```powershell
