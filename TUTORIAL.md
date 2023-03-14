@@ -171,7 +171,7 @@ Both powershell and CLI give you the ability to set a scope below the stack's sc
 
 For management group scoped stack New/Set commands, this is required. Because we do not currently support having the underlying deployment of a management group scoped stack exist at the management group scope, you are required to pass in a subscription id for the subscription where you would like the deployment to exist.
 
-CLI Parameter: `deployment-subscription-id`  
+CLI Parameter: `deployment-subscription-id`
 powershell Parameter: `DeploymentSubscriptionId`
 
 ```azurecli
@@ -193,7 +193,7 @@ New-AzManagmentGroupDeploymentStack -Name 'myMGStack' `
 
 For subscription scoped stack New/Set commands, you may specify a resource group name for a resource group that you would like your underlying deployment to be deployed into, but it is not required. These commands will default to deploying the underlying stack deployment at the same subscription scope as the stack if no resource group name is provided.
 
-CLI Parameter: `deployment-resource-group-name`  
+CLI Parameter: `deployment-resource-group-name`
 powershell Parameter: `DeploymentResourceGroupName`
 
 ```azurecli
