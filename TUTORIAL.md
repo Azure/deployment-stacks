@@ -165,14 +165,9 @@ ManagedResources           : /subscriptions/fc8d../resourceGroups/test-rg1
                              /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
 ```
 
-## Create a deployment stack with deployment at a lower scope
+## Create a deployment stack at a different scope
 
-Both powershell and CLI give you the ability to set a scope below the stack's scope where you would like the deployment to be created. This can be done for both management group and subscription scoped stacks.
-
-For management group scoped stack New/Set commands, this is required. Because we do not currently support having the underlying deployment of a management group scoped stack exist at the management group scope, you are required to pass in a subscription id for the subscription where you would like the deployment to exist.
-
-CLI Parameter: `deployment-subscription-id`
-powershell Parameter: `DeploymentSubscriptionId`
+You create deployment stacks at the management group, subscription, or resource group scopes. The following examples show how to create a deployment stack at the management group scope.
 
 ```azurecli
 az stack mg create `
@@ -191,10 +186,13 @@ New-AzManagmentGroupDeploymentStack -Name 'myMGStack' `
    -DeploymentSubscriptionId 'mySubId'
 ```
 
-For subscription scoped stack New/Set commands, you may specify a resource group name for a resource group that you would like your underlying deployment to be deployed into, but it is not required. These commands will default to deploying the underlying stack deployment at the same subscription scope as the stack if no resource group name is provided.
+For subscription-scoped deployment stack `new` and `set` commands, you can optionally specify a resource group name instead. This resource group will be used to store the deployment stack resources. If you don't specify a resource group name, the deployment stack service will create a new resource group for you.
 
-CLI Parameter: `deployment-resource-group-name`
-powershell Parameter: `DeploymentResourceGroupName`
+> [!NOTE]
+> Most customers want to scope their deployment stacks at the resource group scope.
+
+CLI parameter: `deployment-resource-group-name`
+PowerShell carameter: `DeploymentResourceGroupName`
 
 ```azurecli
 az stack sub create `
@@ -211,6 +209,15 @@ New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -DeploymentResourceGroupName 'myRG'
 ```
 
+Use the az stack group create command to create a deployment stack at the resource group scope. Here's another example:
+
+```azurecli
+az stack group create `
+  --name myRGStack `
+  --location eastus `
+  --template-file main.bicep
+  --resource-group-name myRG
+```
 
 ## View the managed resources in a deployment stack
 
@@ -220,6 +227,20 @@ portal graphical user interface (GUI). To view the managed resources inside
 
 ```powershell
 (Get-AzSubscriptionDeploymentStack -Name mySubStack).Resources
+```
+
+Use `az stack show` to view the managed resources inside a deployment stack by using Azure CLI.
+
+```azurecli
+az stack sub show --name mySubStack --output json
+```
+
+## Export resources from a deployment stack
+
+You can always export the resources from a deployment stack to a Bicep template file. Use the `az stack export` Azure CLI command to export the resources from a deployment stack:
+
+```azurecli
+az stack sub export --name mySubStack --file mySubStack.bicep
 ```
 
 ## Update a deployment stack
