@@ -29,14 +29,6 @@ the new set of managed resources will be determined by the resources defined in 
 
 To create your first deployment stack, work through our [quickstart tutorial](./TUTORIAL.md).
 
-## Feature registration
-
-Use the following PowerShell command to enable the deployment stacks preview feature in your Azure subscription:
-
-```powershell
-Register-AzProviderFeature -ProviderNamespace Microsoft.Resources -FeatureName deploymentStacksPreview
-```
-
 ## Deployment stacks tools installation (PowerShell on Windows, macOS, and Linux)
 
 Use the following steps to install the deployment stacks PowerShell cmdlets:
