@@ -320,7 +320,6 @@ The Azure PowerShell interface also includes these parameters to customize the d
 - `-DenySettingsExcludedPrincipals`
 - `-DenySettingsApplyToChildScopes`
 - `-DenySettingsExcludedActions`
-- `-DenySettingsExcludedDataActions`
 
 ## Detach a resource
 
