@@ -153,13 +153,7 @@ The `2022-08-01-preview` private preview API version has the following limitatio
 
 - Implicitly created resources aren't managed by the stack (therefore, no deny assignments or cleanup is possible)
 
-- The `denyDelete` resource locking method is available in private preview. The `denyWriteAndDelete` method will be available in the future.
-
 - `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM.
-
-- Deployment stacks are currently limited to the resource group and subscription management scopes for the private preview. At this time management group-scoped Azure PowerShell and Azure CLI commands exist; they just aren't usable yet.
-
-- A deployment stack doesn't guarantee the protection of `secureString` and `secureObject` parameters; this release returns them in plain text when requested.
 
 ## Contributing
 
