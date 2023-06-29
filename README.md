@@ -147,13 +147,12 @@ You can get more information from the [deployment operations](https://docs.micro
 
 The `2022-08-01-preview` private preview API version has the following limitations:
 
-- We don't recommended using deployment stacks in production environments because the service is still in preview. Therefore, you should expect breaking changes in future releases.
-
-- Resource group delete currently bypasses deny assignments.
+- Resource group delete currently bypasses deny assignments
 
 - Implicitly created resources aren't managed by the stack (therefore, no deny assignments or cleanup is possible)
 
-- `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM.
+- `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM
+- Management group scoped deployment stacks can only deploy the template to the subscription scope
 
 ## Contributing
 
