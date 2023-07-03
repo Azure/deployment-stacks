@@ -118,11 +118,22 @@ or deletion.
 
 Use `az stack sub create` to create a deployment stack by using Azure CLI that targets the subscription scope.
 
+### For Linux / WSL
 ```azurecli
 az stack sub create \
   --name mySubStack \
   --location eastus \
   --template-file main.bicep
+  --deny-settings-mode None
+```
+
+### For Windows PowerShell
+```azurecli
+az stack sub create `
+  --name olsSubStack `
+  --location westeurope `
+  --template-file main.bicep `
+  --deny-settings-mode None
 ```
 
 Alternatively, use `New-AzSubscriptionDeploymentStack` to create a deployment stack by using Azure PowerShell.
