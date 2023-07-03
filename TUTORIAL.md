@@ -123,7 +123,7 @@ Use `az stack sub create` to create a deployment stack by using Azure CLI that t
 az stack sub create \
   --name mySubStack \
   --location eastus \
-  --template-file main.bicep
+  --template-file main.bicep \
   --deny-settings-mode None
 ```
 
