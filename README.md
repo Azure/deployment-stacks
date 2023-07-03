@@ -70,9 +70,11 @@ Get-Command -Name *DeploymentStack*
 
 Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your Windows machine:
 
+1. Uninstall prior versions of Microsoft Azure CLI that might be installed on your machine
+  
 1. Install _Microsoft Azure CLI.msi_ from the _msi_ folder
 
-1. Note the path to the _azure-mgmt-resource-21.2.0_ software development kit (SDK) folder
+1. Note the path to the _azure-mgmt-resource-23.0.0 software development kit (SDK) folder
 
 1. Open an elevated PowerShell session
 
