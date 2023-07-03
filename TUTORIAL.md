@@ -184,17 +184,19 @@ You create deployment stacks at the management group, subscription, or resource 
 az stack mg create `
   --name myMGStack `
   --location eastus `
-  --template-file main.bicep
-  --management-group-id myMGId
-  --deployment-subscription-id mySubId
+  --template-file main.bicep `
+  --management-group-id myMGId `
+  --deployment-subscription-id mySubId `
+  --deny-settings-mode None
 ```
 
 ```powershell
 New-AzManagmentGroupDeploymentStack -Name 'myMGStack' `
    -Location 'eastus' `
-   -TemplateFile './main.bicep'
-   -ManagementGroupId 'myMGId'
-   -DeploymentSubscriptionId 'mySubId'
+   -TemplateFile './main.bicep' `
+   -ManagementGroupId 'myMGId' `
+   -DeploymentSubscriptionId 'mySubId' `
+   -Deny-settings-mode 'None'
 ```
 
 For subscription-scoped deployment stack `new` and `set` commands, you can optionally specify a resource group name instead. This resource group will be used to store the deployment stack resources. If you don't specify a resource group name, the deployment stack service will create a new resource group for you.
@@ -208,16 +210,17 @@ PowerShell carameter: `DeploymentResourceGroupName`
 ```azurecli
 az stack sub create `
   --name mySubStack `
-  --location eastus `
-  --template-file main.bicep
-  --deployment-resource-group-name myRG
+  --template-file main.bicep `
+  --deployment-resource-group myRG `
+  --deny-settings-mode None
 ```
 
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -Location 'eastus' `
-   -TemplateFile './main.bicep'
-   -DeploymentResourceGroupName 'myRG'
+   -TemplateFile './main.bicep' `
+   -DeploymentResourceGroupName 'myRG' `
+   -DenySettingsMode 'None'
 ```
 
 Use the az stack group create command to create a deployment stack at the resource group scope. Here's another example:
@@ -226,8 +229,9 @@ Use the az stack group create command to create a deployment stack at the resour
 az stack group create `
   --name myRGStack `
   --location eastus `
-  --template-file main.bicep
-  --resource-group-name myRG
+  --template-file main.bicep `
+  --resource-group myRG `
+  --deny-settings-mode None
 ```
 
 ## View the managed resources in a deployment stack
@@ -275,7 +279,8 @@ want to overwrite the existing stack definition:
 az stack sub create `
   --name mySubStack `
   --location eastus `
-  --template-file main.bicep
+  --template-file main.bicep `
+  --deny-settings-mode None
 ```
 
 For example, PowerShell gives the following confirmation warning when you run `New-AzSubscriptionDeploymentStack` again:
