@@ -1,12 +1,5 @@
 # What are deployment stacks?
 
-> IMPORTANT: 
-> Deployment stacks is currently in _private preview_. Thus, please treat this
-> information as confidential and don't share publicly.
-> Also, private preview features aren't covered by Azure Customer Services & Support (CSS)
-> Instead, please file an [issue](https://github.com/Azure/deployment-stacks/issues) so
-> we can address your question or concern. Thanks!
-
 Many Azure administrators find it difficult to manage the lifecycle of their cloud infrastructure.
 For example, infrastructure deployed in Azure may span multiple
 management groups, subscriptions, and resource groups. Deployment stacks simplify lifecycle management for your Azure deployments, regardless of their complexity.
@@ -27,132 +20,14 @@ deployment stack, combined with value of the newest iteration's `actionOnUnmanag
 the lifecycle of the resources managed by the deployment stack. When a deployment stack is updated,
 the new set of managed resources will be determined by the resources defined in the template.
 
-To create your first deployment stack, work through our [quickstart tutorial](./TUTORIAL.md).
+> IMPORTANT: 
+> Deployment stacks is currently in _public preview_.
 
-## Deployment stacks tools installation (PowerShell on Windows, macOS, and Linux)
-
-Use the following steps to install the deployment stacks PowerShell cmdlets:
-
-1. Install the latest `Az` PowerShell module.  See [Install the Azure Az PowerShell module](/powershell/azure/new-azureps-module-az).
-
-1. Open an elevated PowerShell session.
-
-1. Run the following command to bypass local script signing policy in your session.
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process
-```
-
-1. Download the latest [deployment stacks installation package](https://github.com/Azure/deployment-stacks/releases), unzip the package, and then run the installation `.ps1` script. You can choose to install the module either in the current PowerShell session or system-wide.
-
-```powershell
-    ./AzDeploymentStacksPrivatePreview.ps1
-```
-
-  To uninstall the module, run the same `.ps1` file and choose the `Uninstall module (previous system-wide installs)` option.
-
-1. Set the current subscription context to your preferred Azure subscription. As long
-as the deployment stacks feature has been enabled in your Azure AD tenant, the feature is
-available for all subscriptions.
-
-```powershell
-Connect-AzAccount
-Set-AzContext -SubscriptionId '<subscription-id>'
-```
-
-1. Verify the deployment stacks PowerShell commands are available in your PowerShell session by running the following command:
-
-```powershell
-Get-Command -Name *DeploymentStack*
-```
-
-## Deployment stacks tools installation (Azure CLI on Windows)
-
-Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your Windows machine:
-
-1. Install _Microsoft Azure CLI.msi_ from the _msi_ folder
-
-1. Note the path to the _azure-mgmt-resource-21.2.0_ software development kit (SDK) folder
-
-1. Open an elevated PowerShell session
-
-1. Run the following command:
-
-```bash
- & "C:\Program Files (x86)\Microsoft SDKs\Azure\CLI2\python.exe" -m pip install -e <path-to-unzipped-sdk-folder> --force-reinstall
-```
-
-1. Verify you have the Deployment Stacks CLI installed by running the following command (if you get Deployment Stacks output, you know it's installed correctly):
-
-```azurecli
-  az stack --help
-```
-
-1. Switch your Azure CLI context to the appropriate Azure subscription and give the new Deployment Stacks CLI a try!
-
-```azurecli
- az account set --subscription <subscription-id>
-```
-
-## Deployment stacks tools installation (Azure CLI on macOS)
-
-Use the following steps to install the Deployment Stacks Command-Line Interface (CLI) on your macOS computer:
-
-1. Ensure you have Python and pip installed on your Mac. If not, install Homebrew and run the following `brew` commands to install the dependencies:
-
-```bash
-brew install python
-brew install pip
-```
-
-> [!TIP]
-> If the Python and pip install doesn't work for you, try using `python3` and `pip3` in your `brew` commands.
-
-1. Open Terminal and change directory to `Stacks_CLI_Mac_1.8/pypi`.
-
-1. Run the following sequence of `pip` commands in an administrative (sudo) context:
-
-```bash
-pip install azure_cli_core-2.44.1.post20230111200937-py3-none-any.whl
-pip install azure_cli-2.44.1.post20230111200937-py3-none-any.whl
-pip install -e ../azure-mgmt-resource-21.2.0
-```
-
-## Troubleshooting
-
-Deployment stacks contain some diagnostic information that isn't displayed by
-default. When troubleshooting problems with an update, save the objects to analyze them further:
-
-```azurepowershell
-$stack =  Get-AzSubscriptionDeploymentStack -Name 'mySubStack'
-```
-
-There may be more than one level for the error messages, to easily see them all at once:
-
-```powershell
-$stack.Error | ConvertTo-Json -Depth 50
-```
-
-If a deployment was created and the failure occurred during deployment, you can retrieve details of
-the deployment using the deployment commands.  For example if your template was deployed
-to a resource group:
-
-```azurepowershell
-Get-AzResourceGroupDeployment -Id $stack.DeploymentId
-```
-
-You can get more information from the [deployment operations](https://docs.microsoft.com/azure/azure-resource-manager/templates/deployment-history?tabs=azure-portal#get-deployment-operations-and-error-message) as needed.
-
-## Known issues
-
-The `2022-08-01-preview` private preview API version has the following limitations:
-
-- Resource group delete currently bypasses deny assignments
-
-- Implicitly created resources aren't managed by the stack (therefore, no deny assignments or cleanup is possible)
-
-- `Whatif` isn't available in the private preview. `Whatif` allows you to evaluate changes before actually submitting the deployment to ARM
-- Management group scoped deployment stacks can only deploy the template to the subscription scope
+# Docs
++ [QuickStart: Deployment Stacks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/quickstart-create-deployment-stacks?tabs=azure-cli%2CCLI)
++ [QuickStart: Deployment Stacks & Template Specs](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks?tabs=azure-powershell)
++ [How-To: Deployment Stacks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks?tabs=azure-powershell)
++ [Tutorial: Deployment Stacks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/tutorial-use-deployment-stacks?tabs=azure-cli)
 
 ## Contributing
 
