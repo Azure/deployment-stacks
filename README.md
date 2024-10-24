@@ -1,3 +1,6 @@
+# Welcome to the deployment stacks Repo
+This repo will be used to track customer issues for the Generally Available service, [Deployment Stacks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks?tabs=azure-powershell). All new updates to the Deployment Stacks service will be done directly to the GA version available in the latest PowerShell cmdlets and CLI commands. 
+
 # What are deployment stacks?
 
 Many Azure administrators find it difficult to manage the lifecycle of their cloud infrastructure.
