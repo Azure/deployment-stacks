@@ -29,7 +29,7 @@ module secondPIP './pip.bicep' = if (resourceGroupName2 == 'test-rg2') {
   scope: testrg2
   params: {
     location: resourceGroupLocation
-    allocationMethod: 'Dynamic'
+    allocationMethod: 'Static'
     skuName: 'Basic'
   }
 }

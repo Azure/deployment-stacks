@@ -1,5 +1,5 @@
 param location string = resourceGroup().location
-param allocationMethod string
+param allocationMethod string = 'Dynamic'
 param skuName string
 
 resource publicIP1 'Microsoft.Network/publicIPAddresses@2022-01-01' = if (allocationMethod == 'Dynamic') {

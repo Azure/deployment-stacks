@@ -31,7 +31,7 @@ IP address resource (publicIP1 and publicIP2, respectively) in each respective g
 
 > NOTE: The Bicep template in this tutorial represents a simple example for training purposes; it is not meant to be a production-ready template. For more information on using modules, see [Bicep modules](/azure/azure-resource-manager/bicep/modules).
 
-Start by creating a Bicep module template named **main.bicep** using [Visual Studio Code](https://code.visualstudio.com/) with
+Start by creating a Bicep module template named `main.bicep` using [Visual Studio Code](https://code.visualstudio.com/) with
 the [Bicep extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-bicep).
 
 ```bicep
@@ -73,7 +73,7 @@ module secondPIP './pip.bicep' = if (resourceGroupName2 == 'test-rg2') {
 ```
 
 Create another Bicep resource template that defines the two public IP address resources.
-We'll reference this template from `main.bicep`'. Following is a sample Bicep template named `pip.bicep`:
+We'll reference this template from `main.bicep`. Following is a sample Bicep template named `pip.bicep`:
 
 ```bicep
 param location string = resourceGroup().location
@@ -118,7 +118,7 @@ or deletion.
 
 Use `az stack sub create` to create a deployment stack by using Azure CLI that targets the subscription scope.
 
-### For Linux / WSL
+### For bash
 ```azurecli
 az stack sub create \
   --name mySubStack \
@@ -130,8 +130,8 @@ az stack sub create \
 ### For Windows PowerShell
 ```azurecli
 az stack sub create `
-  --name olsSubStack `
-  --location westeurope `
+  --name mySubStack `
+  --location eastus `
   --template-file main.bicep `
   --deny-settings-mode None
 ```
@@ -141,7 +141,9 @@ Alternatively, use `New-AzSubscriptionDeploymentStack` to create a deployment st
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
    -Location 'eastus' `
-   -TemplateFile './main.bicep'
+   -TemplateFile './main.bicep' `
+   -DenySettingsMode 'None' `
+   -ActionOnUnmanage 'DetachAll'
 ```
 
 > NOTE: You can create a deployment stack at the Azure management group, subscription, or resource group management scopes. For example, use `az stack group create` or `New-AzResourceGroupDeploymentStack` to create a deployment stack at the resource group scope. Likewise, use `az stack mg create` or `New-AzManagementGroupDeploymentStack` to create a deployment stack at the management group scope.
@@ -169,8 +171,9 @@ ProvisioningState          : succeeded
 ResourceCleanupAction      : detach
 ResourceGroupCleanupAction : detach
 Location                   : eastus
-CreationTime(UTC)          : Mon, 02, 27, 2023 2:58:30 PM
-ManagedResources           : /subscriptions/fc8d../resourceGroups/test-rg1
+CreationTime(UTC)          : 2/27/2024 2:58:30 PM
+DeploymentId               : /subscriptions/fc8d../providers/Microsoft.Resources/deployments/mySubStack-241205167608c
+Resources                  : /subscriptions/fc8d../resourceGroups/test-rg1
                              /subscriptions/fc8d../resourceGroups/test-rg1/providers/Microsoft.Network/publicIPAddresses/pubIP1
                              /subscriptions/fc8d../resourceGroups/test-rg2
                              /subscriptions/fc8d../resourceGroups/test-rg2/providers/Microsoft.Network/publicIPAddresses/pubIP2
@@ -191,21 +194,21 @@ az stack mg create `
 ```
 
 ```powershell
-New-AzManagmentGroupDeploymentStack -Name 'myMGStack' `
+New-AzManagementGroupDeploymentStack -Name 'myMGStack' `
    -Location 'eastus' `
    -TemplateFile './main.bicep' `
    -ManagementGroupId 'myMGId' `
    -DeploymentSubscriptionId 'mySubId' `
-   -Deny-settings-mode 'None'
+   -DenySettingsMode 'None'
 ```
 
-For subscription-scoped deployment stack `new` and `set` commands, you can optionally specify a resource group name instead. This resource group will be used to store the deployment stack resources. If you don't specify a resource group name, the deployment stack service will create a new resource group for you.
+For subscription-scoped deployment stack `New-` and `Set-` cmdlets, you can optionally specify a resource group name instead. This resource group will be used to store the deployment stack resources. If you don't specify a resource group name, the deployment stack service will create a new resource group for you.
 
 > [!NOTE]
 > Most customers want to scope their deployment stacks at the resource group scope.
 
 CLI parameter: `deployment-resource-group-name`
-PowerShell carameter: `DeploymentResourceGroupName`
+PowerShell parameter: `DeploymentResourceGroupName`
 
 ```azurecli
 az stack sub create `
@@ -236,12 +239,10 @@ az stack group create `
 
 ## View the managed resources in a deployment stack
 
-During private preview, the deployment stack service doesn't yet have an Azure
-portal graphical user interface (GUI). To view the managed resources inside
- a deployment stack, use the following Azure PowerShell command:
+To view the managed resources inside a deployment stack, use the following Azure PowerShell command.
 
 ```powershell
-(Get-AzSubscriptionDeploymentStack -Name mySubStack).Resources
+(Get-AzSubscriptionDeploymentStack -Name 'mySubStack').Resources
 ```
 
 Use `az stack show` to view the managed resources inside a deployment stack by using Azure CLI.
@@ -252,10 +253,14 @@ az stack sub show --name mySubStack --output json
 
 ## Export resources from a deployment stack
 
-You can always export the resources from a deployment stack to a Bicep template file. Use the `az stack export` Azure CLI command to export the resources from a deployment stack:
+You can always export the resources from a deployment stack to a ARM template file. Use the `az stack export` Azure CLI command to export the resources from a deployment stack:
 
 ```azurecli
-az stack sub export --name mySubStack --file mySubStack.bicep
+az stack sub export --name mySubStack > mySubStack.json
+```
+
+```powershell
+Save-AzSubscriptionDeploymentStackTemplate -StackName 'mySubStack' | Out-File -FilePath './mySubStack.json'
 ```
 
 ## Update a deployment stack
@@ -264,15 +269,15 @@ When you manage your Azure deployments with deployment stacks, you service those
 modifying the underlying Bicep or ARM deployment templates and re-running `az stack sub create`
 or `New-AzSubscriptionDeploymentStack`.
 
-For instance, edit `pip.bicep` to set the `allocationMethod`
-parameter to `Static` instead of `Dynamic`:
+For instance, edit `main.bicep` to set the `allocationMethod`
+parameter for the `firstPIP` resource to `Static` instead of `Dynamic`:
 
 ```bicep
-param allocationMethod string = 'Static'
+allocationMethod: 'Static'
 ```
 
 To refresh the deployment stack with Azure CLI,
-run `az stack sub create` or `New-AzSubscriptionDeploymentStack` again and confirm you
+run `az stack sub create` or `New-AzSubscriptionDeploymentStack` again for `mySubStack` and confirm you
 want to overwrite the existing stack definition:
 
 ```azurecli
@@ -288,20 +293,21 @@ For example, PowerShell gives the following confirmation warning when you run `N
 > WARNING: The deployment stack 'mySubStack' you're trying to create already already exists in the current subscription. Do you want to overwrite it? Detaching: resources, resourceGroups (Y/N)
 
 To verify the change, sign into the Azure portal, check the properties of
-the `publicIP` resource and confirm its address allocation method is
-now `Static` instead of `Dynamic`.
+the `pubIP2` resource in `test-rg1` and confirm its address allocation method is now `Static` instead of `Dynamic`.
 
 ## Protect managed resources against deletion
 
 The `--deny-delete` CLI parameter places a special type of lock on managed resources
-that prevents them from deletion by unauthorized security principals (be default, everyone).
+that prevents them from deletion by unauthorized security principals (by default, everyone).
 
 Following are the relevant `az stack sub create` parameters:
 
 - `deny-settings-mode`: Defines how resources deployed by the deployment stack are locked
-- `deny-settings-excluded-principals`: Comma-separated list of Azure Active Directory (Azure AD) principal IDs excluded from the lock. Up to five principals are allowed
+- `deny-settings-excluded-principals`: Comma-separated list of Entra ID principal IDs excluded from the lock. Up to five principals are allowed
 - `deny-settings-apply-to-child-scopes`: Deny settings will be applied to child Azure management scopes
 - `deny-settings-excluded-actions`: List of role-based access control (RBAC) management operations excluded from the deny settings. Up to 200 actions are allowed
+
+To modify deny settings, [Azure Deployment Stack Owner](https://www.azadvertizer.net/azrolesadvertizer/adb29209-aa1d-457b-a786-c913953d2891.html) RBAC is required. Note: The required `Microsoft.Resources/deploymentStacks/manageDenySetting/action operation` exists in the NotActions of the Contributor built-in role.
 
 To apply a `denyDelete` lock to your deployment stack, update your deployment stack definition,
 specifying the appropriate parameter(s):
@@ -311,7 +317,7 @@ az stack sub create `
   --name mySubStack `
   --location eastus `
   --template-file main.bicep `
-  --deny-settings-mode "denyDelete"
+  --deny-settings-mode denyDelete
 ```
 
 Verify the `denyDelete` lock works as expected by signing into the Azure portal and attempting to
@@ -323,19 +329,19 @@ To manage deployment stack deny assignments with Azure PowerShell, include one o
 - `DenyDelete`: Prevent delete operations
 - `DenyWriteAndDelete`: Prevent deletion or modification
 
-For example:
+The Azure PowerShell interface also includes parameters to customize the deny assignment:
+
+- `-DenySettingsExcludedPrincipal`
+- `-DenySettingsApplyToChildScopes`
+- `-DenySettingsExcludedAction`
 
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+  -Location 'eastus' `
   -TemplateFile './main.bicep' `
-  -DenySettingsMode 'DenyDelete'
+  -DenySettingsMode 'DenyDelete' `
+  -ActionOnUnmanage 'DetachAll'
 ```
-
-The Azure PowerShell interface also includes these parameters to customize the deny assignment:
-
-- `-DenySettingsExcludedPrincipals`
-- `-DenySettingsApplyToChildScopes`
-- `-DenySettingsExcludedActions`
 
 ## Detach a resource
 
@@ -362,8 +368,10 @@ For example:
 
 ```powershell
 New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+  -Location 'eastus' `
   -TemplateFile './main.bicep' `
-  -DeleteAll
+  -ActionOnUnmanage 'DeleteAll' `
+  -DenySettingsMode 'None'
 ```
 
 In Azure CLI, unmanaged resources are detached by default. If you'd like to delete rather than detach, you can specify by using one of the following parameters of the `az stack sub create` command:
@@ -384,7 +392,7 @@ az stack sub create `
 
 ## Delete a managed resource
 
-To instruct Azure to delete detached resources, update the stack with **az stack sub create**
+To instruct Azure to delete detached resources, update the stack with `az stack sub create`
 and pass one of the following parameters:
 
 - `--delete-all`: Flag to indicate delete rather than detach for managed resources and resource groups
@@ -402,16 +410,18 @@ az stack sub create `
   --name mySubStack `
   --location eastus `
   --template-file main.bicep `
+  --deny-settings-mode none `
   --delete-resources
 ```
 
 To do the same thing with Azure PowerShell, run the following command:
 
-```azurepowershell
-New-AzSubscriptionDeploymentStack -Name mySubStack `
--Location eastus
--TemplateFile ./main.bicep `
--DeleteResources
+```powershell
+New-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+    -Location 'eastus' `
+    -TemplateFile './main.bicep' `
+    -ActionOnUnmanage 'DeleteResources' `
+    -DenySettingsMode 'None'
 ```
 
 If you removed one of the public IP addresses from your Bicep deployment template, then after
@@ -452,9 +462,9 @@ public IP address have been deleted.
 
 Here's how to do the same thing with Azure PowerShell using the `Remove-AzSubscriptionDeploymentStack` command:
 
-```azurepowershell
-Remove-AzSubscriptionDeploymentStack `
--DeleteAll
+```powershell
+Remove-AzSubscriptionDeploymentStack -Name 'mySubStack' `
+    -DeleteAll
 ```
 
 ## Contribute
