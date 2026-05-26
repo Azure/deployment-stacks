@@ -1,0 +1,54 @@
+name: Agent — nightly batch triage
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  # First-time deployment kick: when this workflow file or the bot source
+  # changes on `main`, run the batch once so newly-deployed installs (or
+  # bot updates) backfill across all open issues without a manual nudge.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/agent-triage-batch.yml'
+      - 'src/**'
+      - 'scripts/triage-single-issue.js'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  batch-triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Find untriaged open issues
+        id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 200 \
+            --json number,labels \
+            --jq '[.[] | select((.labels | map(.name)) | index("agent:triaged") | not) | .number] | join(",")' \
+            > issues.csv
+          NUMS="$(cat issues.csv)"
+          echo "Found untriaged issues: ${NUMS:-(none)}"
+          echo "issues=$NUMS" >> "$GITHUB_OUTPUT"
+
+      - name: Triage each issue
+        if: steps.find.outputs.issues != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          IFS=',' read -ra NUMS <<< "${{ steps.find.outputs.issues }}"
+          for n in "${NUMS[@]}"; do
+            echo "::group::Triaging #$n"
+            ISSUE_NUMBER="$n" node scripts/triage-single-issue.js || echo "Triage failed for #$n (continuing batch)"
+            echo "::endgroup::"
+          done

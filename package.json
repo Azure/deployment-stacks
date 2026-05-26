@@ -1,0 +1,10 @@
+{
+  "name": "deployment-stacks-triage-bot",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Deterministic, no-AI issue triage assistant for the Azure Deployment Stacks repo.",
+  "engines": {
+    "node": ">=20"
+  }
+}
