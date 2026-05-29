@@ -52,7 +52,12 @@ jobs:
     steps:
       - name: Dispatch triage for up to N un-triaged open issues
         env:
-          GH_TOKEN: ${{ github.token }}
+          # Must be the PAT, not GITHUB_TOKEN: dispatches made with the default
+          # token record actor=github-actions[bot], which has no repo permission
+          # and is rejected by the triage workflow's activation gate
+          # (required roles: admin/maintainer/write). Using COPILOT_GITHUB_TOKEN
+          # makes the dispatched runs show actor=<PAT owner>, who has admin.
+          GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           MAX: ${{ github.event.inputs.max_issues || '5' }}
         run: |
