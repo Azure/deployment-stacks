@@ -1,9 +1,9 @@
 # Automated Issue Triage — Operator Guide
 
 This repository runs an AI-augmented issue-triage bot on every new and
-reopened issue (and, optionally, on the existing backlog). This file is
-the **operator runbook**: what's running, how to control it, and how to
-turn it off.
+reopened issue, and on the existing backlog (hourly, 5 issues per run).
+This file is the **operator runbook**: what's running, how to control
+it, and how to turn it off.
 
 ## What it does
 
@@ -71,17 +71,22 @@ Or, as a maintainer in the GitHub UI: react to the issue with the **👀
 
 ## How to enable / disable the backlog catch-up
 
-The backlog workflow (`issue-triage-backlog.yml`) is **inert by default**.
+The backlog workflow (`issue-triage-backlog.yml`) is **active by default**.
+It runs hourly on cron and dispatches triage for up to 5 open issues per
+run that don't yet carry the `agent:ai-triaged` label. At that rate a
+200-issue backlog drains over ~40 hours of wall time.
+
 It checks the repository variable `AGENT_TRIAGE_BACKLOG_ENABLED` and
-exits immediately unless it is set to the literal string `true`.
+pauses only if it is set to the literal string `false`.
 
 ```bash
-# Start draining the backlog (5 issues/hour, hourly cron):
-gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body true \
+# Pause backlog processing (in-flight dispatched runs continue;
+# no new dispatches will fire on cron):
+gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body false \
   --repo Azure/deployment-stacks
 
-# Pause it (in-flight dispatched runs continue; no new dispatches):
-gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body false \
+# Resume (or just delete the variable):
+gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body true \
   --repo Azure/deployment-stacks
 ```
 

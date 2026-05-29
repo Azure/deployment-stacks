@@ -5,15 +5,15 @@ name: Issue Triage — Backlog Catch-up
 # backlog in over time rather than spamming hundreds of comments at once.
 #
 # KILL SWITCH:
-#   This workflow is inert unless the repository variable
-#   `AGENT_TRIAGE_BACKLOG_ENABLED` is set to `true`.
+#   This workflow is active by default. To pause it, set the repository
+#   variable `AGENT_TRIAGE_BACKLOG_ENABLED` to `false`.
 #
-#     # Enable backlog processing:
-#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body true \
+#     # Pause backlog processing (existing dispatched runs are unaffected):
+#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body false \
 #       --repo Azure/deployment-stacks
 #
-#     # Pause it (existing dispatched runs are unaffected):
-#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body false \
+#     # Resume (or just delete the variable):
+#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body true \
 #       --repo Azure/deployment-stacks
 #
 # THROTTLING:
@@ -44,9 +44,10 @@ concurrency:
 
 jobs:
   backlog:
-    # Repo-variable kill switch. Default (unset) keeps this workflow inert
-    # until the team explicitly enables backlog processing.
-    if: ${{ vars.AGENT_TRIAGE_BACKLOG_ENABLED == 'true' }}
+    # Repo-variable kill switch. Default (unset) keeps this workflow active.
+    # Set AGENT_TRIAGE_BACKLOG_ENABLED to 'false' to pause backlog processing
+    # without removing the workflow.
+    if: ${{ vars.AGENT_TRIAGE_BACKLOG_ENABLED != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch triage for up to N un-triaged open issues
