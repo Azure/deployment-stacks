@@ -1,0 +1,97 @@
+name: Issue Triage — Backlog Catch-up
+
+# Dispatches the main AI triage workflow against existing open issues that
+# don't yet bear the `agent:ai-triaged` marker label. Designed to ease the
+# backlog in over time rather than spamming hundreds of comments at once.
+#
+# KILL SWITCH:
+#   This workflow is active by default. To pause it, set the repository
+#   variable `AGENT_TRIAGE_BACKLOG_ENABLED` to `false`.
+#
+#     # Pause backlog processing (existing dispatched runs are unaffected):
+#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body false \
+#       --repo Azure/deployment-stacks
+#
+#     # Resume (or just delete the variable):
+#     gh variable set AGENT_TRIAGE_BACKLOG_ENABLED --body true \
+#       --repo Azure/deployment-stacks
+#
+# THROTTLING:
+#   Each scheduled run handles at most `max_issues` open un-triaged issues
+#   (default 5). At 5/hour the bot drains a 200-issue backlog over ~40
+#   hours of wall time. Adjust `max_issues` on a manual dispatch to drain
+#   faster; the cron job stays at 5.
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_issues:
+        description: 'Max issues to dispatch in this run (1-25)'
+        required: false
+        default: '5'
+        type: string
+  schedule:
+    - cron: '0 * * * *'  # hourly on the hour
+
+permissions:
+  contents: read
+  issues: read
+  actions: write  # required to dispatch workflow_dispatch on issue-triage.lock.yml
+
+concurrency:
+  group: issue-triage-backlog
+  cancel-in-progress: false
+
+jobs:
+  backlog:
+    # Repo-variable kill switch. Default (unset) keeps this workflow active.
+    # Set AGENT_TRIAGE_BACKLOG_ENABLED to 'false' to pause backlog processing
+    # without removing the workflow.
+    if: ${{ vars.AGENT_TRIAGE_BACKLOG_ENABLED != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch triage for up to N un-triaged open issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          MAX: ${{ github.event.inputs.max_issues || '5' }}
+        run: |
+          set -euo pipefail
+
+          # Hard-cap MAX to 25 to prevent accidental flood
+          if [ "$MAX" -gt 25 ]; then MAX=25; fi
+          echo "::notice::Backlog catch-up dispatching up to ${MAX} issue(s)"
+
+          # Enumerate up to 100 open issues, filter out those already
+          # carrying agent:ai-triaged, take first $MAX.
+          mapfile -t ISSUES < <(
+            gh issue list \
+              --repo "$REPO" \
+              --state open \
+              --limit 100 \
+              --json number,labels \
+              --jq "[.[] | select(.labels | map(.name) | contains([\"agent:ai-triaged\"]) | not)][0:${MAX}] | .[].number"
+          )
+
+          if [ "${#ISSUES[@]}" -eq 0 ]; then
+            echo "::notice::No un-triaged open issues found. Backlog is empty."
+            exit 0
+          fi
+
+          echo "::notice::Dispatching triage for ${#ISSUES[@]} issue(s): ${ISSUES[*]}"
+
+          for n in "${ISSUES[@]}"; do
+            if gh workflow run issue-triage.lock.yml \
+                 -F issue_number="$n" \
+                 --repo "$REPO"; then
+              echo "✓ dispatched #${n}"
+            else
+              echo "::warning::Failed to dispatch triage for #${n}; will retry next cron run"
+            fi
+            # Gentle pacing so the runner pool doesn't queue 25 jobs in a
+            # single second. Each run takes ~3 minutes, so 10s spacing is
+            # plenty to interleave job startup overhead.
+            sleep 10
+          done
+
+          echo "::notice::Backlog catch-up complete for this run. Next cron tick will process the next batch."
