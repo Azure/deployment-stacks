@@ -82,6 +82,18 @@ tools:
   github:
     toolsets: [default]
 
+# Microsoft Learn MCP server — gives the agent first-party Microsoft docs
+# search/fetch so it can verify API surface, parameter names, and current
+# behavior against learn.microsoft.com before commenting. No auth required.
+# See https://github.com/MicrosoftDocs/mcp.
+mcp-servers:
+  microsoft-learn:
+    url: https://learn.microsoft.com/api/mcp
+    allowed:
+      - microsoft_docs_search
+      - microsoft_docs_fetch
+      - microsoft_code_sample_search
+
 safe-outputs:
   add-comment:
     max: 1
@@ -215,6 +227,8 @@ Search this repository (open + recently-closed) for issues with the same symptom
 
 For a **bug**: try to find the most likely root cause. You may read code from the relevant upstream public repo (`Azure/bicep`, `Azure/azure-cli`, `Azure/azure-powershell`, etc.) using GitHub MCP tools. Cite specific files and line numbers when you do.
 
+Use the **Microsoft Learn MCP server** (`microsoft_docs_search`, `microsoft_docs_fetch`, `microsoft_code_sample_search`) to verify API surface, parameter names, supported regions, default behaviors, and limits before asserting them. Prefer one short verified citation over three speculative ones.
+
 Produce a 3-block investigation summary (each block 1–3 sentences):
 
 1. **Most likely hypothesis** — your best current guess.
@@ -250,7 +264,7 @@ If you can't even sketch a repro because info is missing, say so in one line and
 
 ### Step 9 — Docs links
 
-Add **up to 3** links to `learn.microsoft.com` documentation that are **directly relevant** to the reporter's problem. Pick the most-specific topical pages (deployment stacks overview, what-if, denySettings, Bicep modules, az stack reference, PowerShell deployment-stack cmdlets, role assignments, private DNS, etc.) — **do not fall back to a generic Azure overview** when something specific exists.
+Add **up to 3** links to `learn.microsoft.com` documentation that are **directly relevant** to the reporter's problem. Use the **Microsoft Learn MCP server** — call `microsoft_docs_search` with terms drawn from the issue, then pick the most-specific topical pages from the results (deployment stacks overview, what-if, denySettings, Bicep modules, az stack reference, PowerShell deployment-stack cmdlets, role assignments, private DNS, etc.). **Do not invent URLs.** **Do not fall back to a generic Azure overview** when something specific exists. If `microsoft_docs_search` returns nothing useful, omit this section rather than guessing.
 
 ### Step 10 — Apply labels
 
@@ -338,4 +352,4 @@ Call `add-comment` with exactly one comment matching the template below. Keep **
 - The team that owns this repo is **ARM Deployments** (also called the Bicep team or ARM Templates team). The maintainers post publicly as that team.
 - A repo-level `fabricbot` (`.github/policies/resourceManagement.yml`) automatically adds `needs triage` to new issues and manages the `Needs: Author Feedback` / `Status: No Recent Activity` lifecycle. **Do not touch any of those labels.**
 - All write operations are limited to this repository (`add-comment` and `add-labels` on the target issue). Never create issues, PRs, or comments anywhere else.
-- The Microsoft Docs MCP server may not be available in this workflow — rely on direct knowledge to suggest `learn.microsoft.com` URLs, and prefer pages you are confident exist.
+- The **Microsoft Learn MCP server** is wired into this workflow. Use `microsoft_docs_search` / `microsoft_docs_fetch` / `microsoft_code_sample_search` to ground claims in current first-party Microsoft documentation instead of guessing from training-data knowledge.
